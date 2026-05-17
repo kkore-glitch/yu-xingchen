@@ -141,9 +141,9 @@ document.querySelectorAll("input[name='spread']").forEach((input) => {
 
 form.addEventListener("submit", async (event) => {
   event.preventDefault();
-  const topics = selectedTopics();
-  if (!topics.length) {
-    ritualText.textContent = "至少勾選一個想問的面向，牌面才知道要往哪裡照亮。";
+  const topic = selectedTopic();
+  if (!topic) {
+    ritualText.textContent = "請先選一個想問的面向，牌面才知道要往哪裡照亮。";
     return;
   }
   clearReading();
@@ -196,8 +196,8 @@ function setupManualChoice() {
   ritualText.textContent = "二選一不是替你決定，而是把兩條路的代價與禮物攤開。";
 }
 
-function selectedTopics() {
-  return [...document.querySelectorAll("input[name='topic']:checked")].map((input) => input.value);
+function selectedTopic() {
+  return document.querySelector("input[name='topic']:checked")?.value || "";
 }
 
 function choiceLabels() {
@@ -263,69 +263,88 @@ async function revealSequentially(done) {
 }
 
 function finishReading() {
-  const topics = selectedTopics();
+  const topic = selectedTopic();
   const labels = currentSpread === "choice" ? choiceLabels() : spreads[currentSpread].labels;
   results.hidden = false;
-  summary.textContent = buildSummary(topics, labels);
-  resultList.innerHTML = drawnCards.map((drawn, index) => `
+  summary.textContent = buildSummary(topic, labels);
+  resultList.innerHTML = drawnCards.map((drawn, index) => {
+    const sections = interpretSections(drawn, labels[index], topic, currentSpread)
+      .map((section) => `
+        <div class="reading-section">
+          <strong>${escapeHtml(section.title)}</strong>
+          <p>${escapeHtml(section.text)}</p>
+        </div>
+      `).join("");
+    return `
     <article class="reading-card">
-      <h3>${labels[index]}｜${drawn.card.zh}（${drawn.reversed ? "逆位" : "正位"}）</h3>
-      <p>${interpret(drawn, labels[index], topics, currentSpread)}</p>
+      <h3>${escapeHtml(labels[index])}｜${escapeHtml(drawn.card.zh)}（${drawn.reversed ? "逆位" : "正位"}）</h3>
+      ${sections}
     </article>
-  `).join("");
+  `;
+  }).join("");
   ritualText.textContent = "牌面已經揭示，請把它當成一面鏡子，而不是命令。";
   results.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
-function buildSummary(topics, labels) {
-  const topicText = topics.map((topic) => topicLabels[topic]).join("、");
+function buildSummary(topic, labels) {
+  const topicText = topicLabels[topic];
   if (currentSpread === "choice") {
-    return `本次二選一聚焦在「${topicText}」。這個牌陣會先看共同現況，再比較兩條路線的過程與可能結果；它不替你宣判哪條路絕對正確，而是協助你看見哪一邊更順勢，哪一邊需要付出更清醒的代價。`;
+    return `本次二選一聚焦在「${topicText}」。以下只列出每張牌所在位置與傳統牌意，實際解讀可由解讀者自行延伸。`;
   }
-  return `本次${spreads[currentSpread].name}聚焦在「${topicText}」。三張牌分別對應${labels.join("、")}；請把解讀視為目前能量的天氣圖，天氣會影響行動，但真正的方向仍由你調整。`;
+  return `本次${spreads[currentSpread].name}聚焦在「${topicText}」。以下只列出${labels.join("、")}各位置的傳統牌意。`;
 }
 
-function interpret(drawn, position, topics, spread) {
+function interpretSections(drawn, position, topic, spread) {
   const { card, reversed } = drawn;
-  const polarity = reversed ? card.reversed : card.upright;
-  const base = reversed
-    ? `這張牌以逆位落在「${position}」，表示${card.theme}的力量被壓住或走得不太順。它不是單純的壞兆頭，比較像提醒你：某些期待、節奏或溝通方式正在讓事情繞遠路。${polarity}會讓人有一種明明已經很努力，卻還差臨門一腳的感覺。`
-    : `這張牌以正位落在「${position}」，表示${card.theme}的力量正在較清楚地運作。${polarity}是它的主調，因此局面有可被掌握的部分；即使還有變數，也比較適合主動整理資訊、表達立場，或把已經浮現的機會接住。`;
-
-  const topicText = topics.map((topic) => topicAdvice(topic, drawn, position)).join("");
-  const spreadText = spreadAdvice(spread, position, drawn);
-  const closing = reversed
-    ? "建議你先不要急著把結果定死，尤其避免用恐懼做決定。把真正卡住的點寫下來，分辨哪些是事實、哪些只是想像；當你願意修正方法，這張逆位牌反而會變成轉向的入口。"
-    : "建議你順著這股力量前進，但保留一點彈性。好牌不是保證零風險，而是提醒你目前有資源可以使用；把承諾說清楚、把時間安排穩，這份優勢就比較不會只是短暫的幸運。";
-  return `${base}${topicText}${spreadText}${closing}`;
+  const keyword = reversed ? card.reversed : card.upright;
+  return [
+    {
+      title: "位置",
+      text: positionMeaning(spread, position),
+    },
+    {
+      title: "傳統關鍵字",
+      text: keyword,
+    },
+    {
+      title: "基本牌意",
+      text: traditionalMeaning(drawn),
+    },
+    {
+      title: "面向",
+      text: `本次問題面向：${topicLabels[topic]}。此處不做延伸建議，保留給解讀者自行講解。`,
+    },
+  ];
 }
 
-function topicAdvice(topic, drawn, position) {
-  const { card, reversed } = drawn;
-  const tone = reversed ? "需要先修正" : "可以被善用";
-  const map = {
-    work: `在工作上，${card.theme}${tone}：你可能遇到權責、時程或合作默契的考驗。若這張牌靠近結果位，代表成敗多半取決於你是否願意把模糊任務拆成可交付的步驟。`,
-    love: `在愛情上，${card.theme}${tone}：它指向吸引、期待與安全感的互動。若關係正在曖昧或拉扯，別只看對方一句話，請看長期行為是否一致。`,
-    family: `在親情上，${card.theme}${tone}：家人之間可能有舊模式正在重複。你不必一次說服所有人，但可以先把界線說得溫和而清楚，避免情緒替你發言。`,
-    self: `在自我成長上，${card.theme}${tone}：這像是在問你是否真的聽見自己的需求。若你最近很累，請把「應該」和「願意」分開，答案會比較安靜地浮現。`,
-  };
-  return map[topic];
-}
-
-function spreadAdvice(spread, position, drawn) {
+function positionMeaning(spread, position) {
   if (spread === "flow") {
-    if (position.includes("過去")) return "作為過去牌，它常指向已經形成的習慣或曾經做過的選擇；你不能改寫它，但可以重新理解它帶來的禮物與陰影。";
-    if (position.includes("現在")) return "作為現在牌，它最值得立刻處理；這裡的訊息若被忽略，未來牌的好壞都會被放大。";
-    return "作為未來牌，它描述的是沿著目前路線前進後較可能遇見的風景；若你調整行動，結果仍有改寫空間。";
+    if (position.includes("過去")) return "過去的根：事件已形成的背景、舊有因素、先前選擇或累積狀態。";
+    if (position.includes("現在")) return "現在的流向：目前正在運作的能量、眼前狀況與當下最明顯的主題。";
+    return "未來的可能：依照目前狀態延伸出的趨勢、可能發展或後續氣氛。";
   }
   if (spread === "triangle") {
-    if (position.includes("狀況")) return "在狀況位，它像是事件的表層天氣，告訴你此刻最明顯的能量與情緒溫度。";
-    if (position.includes("阻礙")) return "在阻礙位，它不一定是敵人，也可能是你尚未學會使用的力量；先承認卡點，才有下一步。";
-    return "在建議位，它要求你把抽象感受落到具體行動，不用一次改變全部，只要先做最有把握的一步。";
+    if (position.includes("狀況")) return "目前狀況：事件表面與核心正在呈現的樣子。";
+    if (position.includes("阻礙")) return "主要阻礙：卡住、拖延、衝突或需要留意的因素。";
+    return "可行建議：牌陣中作為行動方向、態度或處理方式的位置。";
   }
-  if (position.includes("現況")) return "共同現況位通常是兩條路線都繞不開的核心議題，所以請先處理這裡，再比較 A 與 B 的表面差異。";
-  if (position.includes("過程")) return "過程位比較像路上的氣候：它未必決定終點，卻會影響你一路上的消耗、信心與人際互動。";
-  return "結果位呈現的是目前能量延伸出的傾向，不是永遠不變的結局；若這張牌提醒風險，越早調整越能降低代價。";
+  if (position.includes("現況")) return "共同現況：A 與 B 兩條路線都共同面對的背景與起點。";
+  if (position.includes("過程")) return `${position}：選擇此路線時，中途可能呈現的狀態或氣氛。`;
+  return `${position}：此路線照目前能量延伸出的可能結果或收束狀態。`;
+}
+
+function traditionalMeaning(drawn) {
+  const { card, reversed } = drawn;
+  if (card.arcana === "major") {
+    return reversed
+      ? `${card.zh}逆位通常指向${card.reversed}。傳統上，它表示這張大牌的主題「${card.theme}」受阻、失衡、延遲，或以較不成熟的方式表現。`
+      : `${card.zh}正位通常指向${card.upright}。傳統上，它表示這張大牌的主題「${card.theme}」正在清楚呈現，屬於事件中的主要力量。`;
+  }
+  const suit = suitData[card.suit];
+  const rankText = pipTone[card.rank][1];
+  return reversed
+    ? `${card.zh}逆位通常指向${card.reversed}。${suit.zh}屬於${suit.element}元素，傳統上與${suit.upright}有關；逆位時，這股力量較容易失衡或不順。牌階含義：${rankText}。`
+    : `${card.zh}正位通常指向${card.upright}。${suit.zh}屬於${suit.element}元素，傳統上與${suit.upright}有關。牌階含義：${rankText}。`;
 }
 
 function cardImage(card) {
@@ -453,6 +472,10 @@ function escapeXml(value) {
     .replaceAll("<", "&lt;")
     .replaceAll(">", "&gt;")
     .replaceAll('"', "&quot;");
+}
+
+function escapeHtml(value) {
+  return escapeXml(value).replaceAll("'", "&#39;");
 }
 
 function pause(ms) {

@@ -377,13 +377,24 @@ button:disabled {
 
 .reading-card h3 {
   font-size: 1.15rem;
-  margin-bottom: 8px;
+  margin-bottom: 14px;
 }
 
-.reading-card p {
+.reading-section {
+  display: grid;
+  gap: 6px;
+  margin: 0 0 14px;
+}
+
+.reading-section strong {
+  color: var(--gold);
+  font-size: 0.94rem;
+}
+
+.reading-section p {
   margin: 0;
   color: #eadfc7;
-  line-height: 1.9;
+  line-height: 1.75;
 }
 
 @media (max-width: 900px) {
