@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>隅星辰</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="shell">
+      <section class="oracle">
+        <div class="brand">
+          <span class="sigil" aria-hidden="true">✦</span>
+          <div>
+            <p>Traditional Waite Tarot</p>
+            <h1>隅星辰</h1>
+          </div>
+        </div>
+
+        <form class="control-panel" id="readingForm">
+          <fieldset>
+            <legend>牌陣</legend>
+            <div class="spread-grid" role="radiogroup" aria-label="選擇牌陣">
+              <label class="spread-option">
+                <input type="radio" name="spread" value="flow" checked />
+                <span>
+                  <strong>時間之流</strong>
+                  <small>過去、現在、未來</small>
+                </span>
+              </label>
+              <label class="spread-option">
+                <input type="radio" name="spread" value="triangle" />
+                <span>
+                  <strong>聖三角</strong>
+                  <small>狀況、阻礙、建議</small>
+                </span>
+              </label>
+              <label class="spread-option">
+                <input type="radio" name="spread" value="choice" />
+                <span>
+                  <strong>二選一</strong>
+                  <small>現況、A 路線、B 路線</small>
+                </span>
+              </label>
+            </div>
+          </fieldset>
+
+          <fieldset>
+            <legend>想問的面向</legend>
+            <div class="topic-grid">
+              <label><input type="checkbox" name="topic" value="work" checked />工作</label>
+              <label><input type="checkbox" name="topic" value="love" />愛情</label>
+              <label><input type="checkbox" name="topic" value="family" />親情</label>
+              <label><input type="checkbox" name="topic" value="self" />自我</label>
+            </div>
+          </fieldset>
+
+          <div class="choice-fields" id="choiceFields" hidden>
+            <p>開始前，先在心裡清楚定義 A 路線與 B 路線。名稱可以不填，但越具體，解讀越容易對焦。</p>
+            <label>
+              A 路線
+              <input id="routeA" type="text" maxlength="36" placeholder="例如：留下原職、接受告白、主動溝通" />
+            </label>
+            <label>
+              B 路線
+              <input id="routeB" type="text" maxlength="36" placeholder="例如：轉職、保持距離、暫時觀察" />
+            </label>
+          </div>
+
+          <div class="actions">
+            <button type="submit" id="startButton">
+              <span>開始洗牌</span>
+            </button>
+            <button type="button" id="resetButton" class="ghost">重置</button>
+          </div>
+        </form>
+      </section>
+
+      <section class="table" aria-live="polite">
+        <div class="altar">
+          <div class="moon"></div>
+          <div class="deck" id="deck" aria-hidden="true">
+            <div></div><div></div><div></div>
+          </div>
+          <p id="ritualText">選擇牌陣與面向，讓牌面慢慢聚焦。</p>
+        </div>
+
+        <div class="draw-area" id="drawArea"></div>
+        <div class="manual-draw" id="manualDraw" hidden>
+          <button type="button" id="drawNext">抽出第一張牌</button>
+          <p id="manualHint">二選一會依序抽出現況、A 過程、A 結果、B 過程、B 結果。</p>
+        </div>
+      </section>
+
+      <section class="results" id="results" hidden>
+        <div class="section-heading">
+          <p>Reading</p>
+          <h2>牌面解讀</h2>
+        </div>
+        <div id="summary" class="summary"></div>
+        <div id="resultList" class="result-list"></div>
+      </section>
+    </main>
+
+    <script src="app.js"></script>
+  </body>
+</html>
