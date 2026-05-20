@@ -1,12 +1,11 @@
-const CACHE_NAME = "yu-xingchen-20260520-3";
+const CACHE_NAME = "yu-xingchen-20260520-4";
 const APP_SHELL = [
   "./",
   "index.html",
-  "styles.css?v=20260520c",
-  "app.js?v=20260520c",
+  "styles.css?v=20260520d",
+  "app.js?v=20260520d",
   "manifest.webmanifest",
   "assets/icon.svg",
-  "assets/tarot-sprite.png",
 ];
 
 self.addEventListener("install", (event) => {

@@ -1,18 +1,35 @@
 const SOURCE_URL = "https://sacred-texts.com/tarot/pkt/index.htm";
-const SPRITE_SRC = "assets/tarot-sprite.png";
-const SPRITE_WIDTH = 1402;
-const SPRITE_HEIGHT = 1122;
+const IMAGE_SOURCE_URL = "https://commons.wikimedia.org/wiki/Category:Rider-Waite_tarot_deck_(Roses_%26_Lilies)";
 const CARD_RATIO = 70 / 121;
 const STEPS = ["question", "focus", "spread", "details", "draw", "result"];
-const CARD_BOXES = [
-  [3, 4, 117, 185], [122, 4, 118, 185], [241, 4, 119, 185], [362, 4, 119, 185], [482, 4, 119, 185], [603, 4, 118, 185], [723, 4, 117, 185], [842, 4, 118, 185], [962, 4, 119, 185], [1083, 4, 118, 185], [1203, 4, 117, 185],
-  [3, 190, 117, 181], [122, 190, 118, 181], [241, 190, 119, 181], [362, 190, 119, 181], [482, 190, 119, 181], [603, 190, 118, 181], [723, 190, 117, 181], [842, 190, 118, 181], [962, 190, 119, 181], [1083, 190, 118, 181], [1203, 190, 117, 181],
-  [3, 372, 117, 168], [122, 372, 118, 168], [241, 372, 119, 168], [362, 372, 119, 168], [482, 372, 119, 168], [603, 372, 118, 168], [723, 372, 117, 168], [842, 372, 118, 168], [962, 372, 119, 168], [1083, 372, 118, 168], [1203, 372, 117, 168],
-  [3, 541, 117, 162], [122, 541, 118, 162], [241, 541, 119, 162], [362, 541, 119, 162], [482, 541, 119, 162], [603, 541, 118, 162], [723, 541, 117, 162], [842, 541, 118, 162], [962, 541, 119, 162], [1083, 541, 118, 162], [1203, 541, 117, 162],
-  [3, 704, 117, 158], [122, 704, 118, 158], [241, 704, 119, 158], [362, 704, 119, 158], [482, 704, 119, 158], [603, 704, 118, 158], [723, 704, 117, 158], [842, 704, 118, 158], [962, 704, 119, 158], [1083, 704, 118, 158], [1203, 704, 117, 158],
-  [3, 864, 117, 133], [122, 863, 118, 134], [241, 864, 119, 133], [362, 864, 119, 133], [482, 864, 119, 133], [603, 863, 118, 134], [723, 863, 117, 134], [842, 863, 118, 134], [962, 863, 119, 134], [1083, 863, 118, 134], [1203, 864, 117, 133],
-  [3, 998, 109, 122], [113, 998, 106, 122], [219, 998, 106, 122], [326, 998, 105, 122], [432, 998, 111, 122], [544, 998, 112, 122], [656, 998, 112, 122], [769, 998, 110, 122], [880, 998, 106, 122], [987, 998, 108, 122], [1096, 998, 100, 122],
+
+const majorImageNames = [
+  "00 Fool", "01 Magician", "02 High Priestess", "03 Empress", "04 Emperor", "05 Hierophant",
+  "06 Lovers", "07 Chariot", "08 Strength", "09 Hermit", "10 Wheel of Fortune", "11 Justice",
+  "12 Hanged Man", "13 Death", "14 Temperance", "15 Devil", "16 Tower", "17 Star",
+  "18 Moon", "19 Sun", "20 Judgement", "21 World",
 ];
+
+const rankNumbers = {
+  Ace: "01",
+  Two: "02",
+  Three: "03",
+  Four: "04",
+  Five: "05",
+  Six: "06",
+  Seven: "07",
+  Eight: "08",
+  Nine: "09",
+  Ten: "10",
+  Page: "11",
+  Knight: "12",
+  Queen: "13",
+  King: "14",
+};
+
+function commonsImageUrl(fileName) {
+  return `https://commons.wikimedia.org/wiki/Special:Redirect/file/${encodeURIComponent(fileName)}`;
+}
 
 const topicLabels = {
   work: "工作",
@@ -70,12 +87,12 @@ const majorCards = [
   ["愚者", "The Fool", "愚行、狂熱、放縱、失序與未定形的衝動。", "疏忽、空缺、冷漠、虛榮與無結果的行動。"],
   ["魔術師", "The Magician", "技藝、機敏、意志、自信，以及能運用手邊工具。", "技巧誤用、心神不寧、欺瞞、失手或能力未能正當發揮。"],
   ["女祭司", "The High Priestess", "秘密、神祕、尚未揭露的未來、直覺與隱藏知識。", "表面知識、激情、過度主觀，或隱情被誤讀。"],
-  ["皇后", "The Empress", "豐饒、行動、主動性、孕育、成形與感官世界。", "遲疑、真相浮現、事情揭開，但也可能失去穩定。"],
-  ["皇帝", "The Emperor", "穩固、權力、保護、實現、秩序與掌控。", "不成熟、阻礙、控制失衡，或權威變得僵硬。"],
+  ["皇后", "The Empress", "豐饒、行動、主動性、孕育、成形與感官世界。", "遲疑、真相浮現、事情揭開，原本的秩序可能鬆動。"],
+  ["皇帝", "The Emperor", "秩序、權力、保護、實現、規則與掌控。", "不成熟、阻礙、控制失衡，或權威變得僵硬。"],
   ["教皇", "The Hierophant", "婚姻、同盟、慈悲、傳統、制度與精神指引。", "過度順從、脆弱、反常規，或信念與制度的拉扯。"],
   ["戀人", "The Lovers", "吸引、愛、美、考驗、選擇與關係中的試煉。", "失敗、分離、選擇失準，或情感考驗未能通過。"],
   ["戰車", "The Chariot", "勝利、克服、援助、掌控與意志推進。", "失控、爭端、敗退、方向錯置或掌控力下降。"],
-  ["力量", "Strength", "力量、勇氣、耐心、柔性控制與內在韌性。", "軟弱、濫用力量、失去耐性或意志不穩。"],
+  ["力量", "Strength", "力量、勇氣、耐心、柔性控制與內在韌性。", "軟弱、濫用力量、失去耐性或意志搖擺。"],
   ["隱者", "The Hermit", "審慎、尋求、內省、指引與深思後的判斷。", "孤立、恐懼、過度保守、隱瞞或拒絕建議。"],
   ["命運之輪", "Wheel of Fortune", "命運、變化、轉折、幸運與循環。", "延遲、壞運、循環受阻或變化不如預期。"],
   ["正義", "Justice", "公平、正義、因果、法律、平衡與清楚判斷。", "不公、偏見、複雜化、失衡或判斷失準。"],
@@ -85,7 +102,7 @@ const majorCards = [
   ["惡魔", "The Devil", "束縛、誘惑、物質執著、暴力力量與被牽制。", "鬆綁、弱化、擺脫束縛，但也可能仍受恐懼牽制。"],
   ["高塔", "The Tower", "突變、崩塌、災難、舊結構破裂與真相震動。", "壓抑中的崩塌、拖延的破局、受困或不願放手。"],
   ["星星", "The Star", "希望、明亮前景、洞察、靈感與精神上的慰藉。", "失望、驕傲、信心不足，或希望未能落地。"],
-  ["月亮", "The Moon", "隱憂、迷霧、欺瞞、恐懼、夢境與潛意識。", "不穩定、較小的欺瞞、危機漸退但仍未明朗。"],
+  ["月亮", "The Moon", "隱憂、迷霧、欺瞞、恐懼、夢境與潛意識。", "情勢搖晃、較小的欺瞞、危機漸退但仍未明朗。"],
   ["太陽", "The Sun", "快樂、成功、滿足、活力與清楚可見的成果。", "延遲的成功、較弱的幸福，或喜悅未完全展開。"],
   ["審判", "Judgement", "更新、召喚、判斷、甦醒與位置改變。", "遲疑、軟弱、簡單判斷失準，或不願回應召喚。"],
   ["世界", "The World", "完成、成功、旅程、整合與一個循環的圓滿。", "停滯、固定、慣性、完成受阻或不願跨出下一步。"],
@@ -95,9 +112,9 @@ const minorCards = [
   ["wands", "權杖", "Wands", "Ace", "一", "創造、開始、事業、誕生與新的能量。", "衰退、挫敗、空轉、開始受阻或喜悅被遮蔽。"],
   ["wands", "權杖", "Wands", "Two", "二", "財富、遠景、成就，但也帶有不滿與等待。", "驚訝、恐懼、迷惑，局勢超出預期。"],
   ["wands", "權杖", "Wands", "Three", "三", "已建立的力量、貿易、合作與向外拓展。", "辛勞終止、麻煩收束，但成果仍有限。"],
-  ["wands", "權杖", "Wands", "Four", "四", "安居、和諧、收成、休息與家庭式的歡慶。", "繁榮、美化、表面愉快，或穩定感較浮動。"],
+  ["wands", "權杖", "Wands", "Four", "四", "安居、和諧、收成、休息與家庭式的歡慶。", "繁榮、美化、表面愉快，或安定感較浮動。"],
   ["wands", "權杖", "Wands", "Five", "五", "競爭、衝突、模擬戰、爭奪與意見交鋒。", "爭訟、詭計、糾紛，競爭變得不正當。"],
-  ["wands", "權杖", "Wands", "Six", "六", "勝利、好消息、成功、眾望所歸與凱旋。", "遲延、憂懼、消息未至或勝利不穩。"],
+  ["wands", "權杖", "Wands", "Six", "六", "勝利、好消息、成功、眾望所歸與凱旋。", "遲延、憂懼、消息未至或勝利尚未落定。"],
   ["wands", "權杖", "Wands", "Seven", "七", "勇氣、抵抗、談判、在壓力中守住位置。", "困惑、尷尬、焦慮，立場難以維持。"],
   ["wands", "權杖", "Wands", "Eight", "八", "快速行動、訊息、急速發展與事情逼近。", "嫉妒、爭吵、內部衝突或進展受干擾。"],
   ["wands", "權杖", "Wands", "Nine", "九", "防備、堅持、延遲、在壓力後仍守住力量。", "阻礙、逆境、災厄或防線疲弱。"],
@@ -106,7 +123,7 @@ const minorCards = [
   ["wands", "權杖", "Wands", "Knight", "騎士", "離開、遷移、變動、熱烈行動與快速轉向。", "破裂、分離、干擾、行動被打斷。"],
   ["wands", "權杖", "Wands", "Queen", "皇后", "親切、貞潔、友善、熱情與可靠的支持。", "嫉妒、反覆、狹隘或善意被扭曲。"],
   ["wands", "權杖", "Wands", "King", "國王", "誠實、成熟、熱情、領導與實際的善意。", "嚴厲、固執、過度控制，或權威不易親近。"],
-  ["cups", "聖杯", "Cups", "Ace", "一", "喜悅、滿足、真心、情感的居所與愛的開始。", "虛情、情感不穩、變動、關係中的不可靠。"],
+  ["cups", "聖杯", "Cups", "Ace", "一", "喜悅、滿足、真心、情感的居所與愛的開始。", "虛情、情感起伏、變動、關係中的不可靠。"],
   ["cups", "聖杯", "Cups", "Two", "二", "愛、友誼、結合、和解與彼此吸引。", "假愛、誤會、愚行、關係中的不一致。"],
   ["cups", "聖杯", "Cups", "Three", "三", "圓滿、豐盛、慶祝、團聚與事情告一段落。", "過度、享樂、拖延，或成果來得太匆促。"],
   ["cups", "聖杯", "Cups", "Four", "四", "厭倦、冷淡、倦怠、對既有事物失去興趣。", "新鮮感、新關係、新指示或重新打開的可能。"],
@@ -129,23 +146,23 @@ const minorCards = [
   ["swords", "寶劍", "Swords", "Seven", "七", "計畫、企圖、策略、希望與不完全正面的取巧。", "建議、忠告、指引，或策略需要被重新審視。"],
   ["swords", "寶劍", "Swords", "Eight", "八", "限制、危機、束縛、壞消息與無法自由行動。", "不安、意外、背叛、困難仍未完全解除。"],
   ["swords", "寶劍", "Swords", "Nine", "九", "失敗、絕望、痛苦、擔憂、惡夢與精神壓力。", "懷疑、羞愧、禁錮、恐懼仍然存在。"],
-  ["swords", "寶劍", "Swords", "Ten", "十", "痛苦、終結、淚水、荒涼與重擊後的狀態。", "短暫利益、好轉有限、成功不穩或只是暫緩。"],
+  ["swords", "寶劍", "Swords", "Ten", "十", "痛苦、終結、淚水、荒涼與重擊後的狀態。", "短暫利益、好轉有限、成功尚未落定或只是暫緩。"],
   ["swords", "寶劍", "Swords", "Page", "侍者", "警覺、偵查、監視、權威訊息與敏銳觀察。", "意外、無力、疾病或觀察變成猜疑。"],
   ["swords", "寶劍", "Swords", "Knight", "騎士", "勇敢、技巧、衝鋒、戰鬥精神與強烈行動。", "魯莽、無能、浪費力量或衝動失控。"],
   ["swords", "寶劍", "Swords", "Queen", "皇后", "悲傷、寡居、獨立、清醒判斷與冷峻智慧。", "惡意、偏狹、欺瞞、尖刻或判斷傷人。"],
   ["swords", "寶劍", "Swords", "King", "國王", "判斷、命令、權威、法律與理性控制。", "殘酷、邪惡意圖、濫權或冷酷的判決。"],
-  ["pentacles", "星幣", "Pentacles", "Ace", "一", "財富、滿足、黃金、穩定資源與物質開始。", "財富的負面、貪婪、錯誤消息或資源受阻。"],
-  ["pentacles", "星幣", "Pentacles", "Two", "二", "娛樂、往來、變動中的平衡、消息與多工。", "假裝的愉快、勉強維持、消息或安排不穩。"],
+  ["pentacles", "星幣", "Pentacles", "Ace", "一", "財富、滿足、黃金、實際資源與物質開始。", "財富的負面、貪婪、錯誤消息或資源受阻。"],
+  ["pentacles", "星幣", "Pentacles", "Two", "二", "娛樂、往來、變動中的平衡、消息與多工。", "假裝的愉快、勉強維持、消息或安排生變。"],
   ["pentacles", "星幣", "Pentacles", "Three", "三", "技藝、工作、交易、熟練與被看見的專業。", "平庸、幼稚、弱點、技術或成果不足。"],
   ["pentacles", "星幣", "Pentacles", "Four", "四", "持有、財產安全、禮物、遺產與保守累積。", "延遲、懸而未決、阻礙或過度守成。"],
   ["pentacles", "星幣", "Pentacles", "Five", "五", "貧困、物質困難、孤立、缺乏與現實壓力。", "混亂、失序、破敗，但困境型態開始改變。"],
   ["pentacles", "星幣", "Pentacles", "Six", "六", "贈與、分享、報酬、慈善與資源分配。", "嫉妒、貪欲、欲望不均或施受關係失衡。"],
   ["pentacles", "星幣", "Pentacles", "Seven", "七", "金錢、等待收成、事業盤算與成果未定。", "焦慮、急躁、金錢壓力或回報不如預期。"],
   ["pentacles", "星幣", "Pentacles", "Eight", "八", "工作、學徒、技能、專注與逐步累積。", "虛榮、野心落空、偷懶或技術使用不正。"],
-  ["pentacles", "星幣", "Pentacles", "Nine", "九", "謹慎、安全、完成、獨立與舒適成果。", "欺瞞、壞信、失竊或表面安穩下的不可靠。"],
-  ["pentacles", "星幣", "Pentacles", "Ten", "十", "財富、家族、繼承、穩固結構與長期資源。", "偶然、風險、失竊、家庭或財務結構不穩。"],
+  ["pentacles", "星幣", "Pentacles", "Nine", "九", "謹慎、安全、完成、獨立與舒適成果。", "欺瞞、壞信、失竊或表面安定下的不可靠。"],
+  ["pentacles", "星幣", "Pentacles", "Ten", "十", "財富、家族、繼承、牢固結構與長期資源。", "偶然、風險、失竊、家庭或財務結構生變。"],
   ["pentacles", "星幣", "Pentacles", "Page", "侍者", "學習、專注、研究、消息與對實際事物的投入。", "浪費、散漫、壞消息或無法專心累積。"],
-  ["pentacles", "星幣", "Pentacles", "Knight", "騎士", "實用、責任、耐心、可靠執行與穩定推進。", "停滯、懶散、漫不經心，或責任變成沉重。"],
+  ["pentacles", "星幣", "Pentacles", "Knight", "騎士", "實用、責任、耐心、可靠執行與持續推進。", "停滯、懶散、漫不經心，或責任變成沉重。"],
   ["pentacles", "星幣", "Pentacles", "Queen", "皇后", "富足、慷慨、安全、實際照顧與資源管理。", "疑心、依賴、忽略現實，或安全感失衡。"],
   ["pentacles", "星幣", "Pentacles", "King", "國王", "商業、能力、安定、成功、成熟資源與可靠掌控。", "貪婪、腐敗、固執、風險與物質上的失德。"],
 ];
@@ -175,7 +192,7 @@ function buildDeck() {
     en,
     upright,
     reversed,
-    spriteIndex: index,
+    image: commonsImageUrl(`RWS1909 - ${majorImageNames[index]}.jpeg`),
   }));
 
   const minors = minorCards.map(([suit, suitZh, suitEn, rankEn, rankZh, upright, reversed], index) => ({
@@ -186,7 +203,7 @@ function buildDeck() {
     en: `${rankEn} of ${suitEn}`,
     upright,
     reversed,
-    spriteIndex: majorCards.length + index,
+    image: commonsImageUrl(`RWS1909 - ${suitEn} ${rankNumbers[rankEn]}.jpeg`),
   }));
 
   return [...majors, ...minors];
@@ -219,7 +236,7 @@ function renderQuestion() {
       <div class="copy">
         <p class="eyebrow">Step 01</p>
         <h1>想問什麼事情？</h1>
-        <p>先選一個面向，再把問題寫成一句話。這裡不會替你做判決，最後只會給出牌位、正逆位與傳統牌義，方便解讀者自己延伸。</p>
+        <p>選一個面向，寫下一句清楚的問題。結果會列出牌位、正逆位與傳統牌義，保留給解讀者說明。</p>
       </div>
       <form class="panel" id="questionForm">
         <div class="field">
@@ -243,7 +260,7 @@ function renderFocus() {
       <div class="copy">
         <p class="eyebrow">Step 02</p>
         <h2>把問題放在心裡</h2>
-        <p>默念一次你的問題。不要急著尋找答案，只要確認你現在問的是「${escapeHtml(topicLabels[state.topic])}」這件事。</p>
+        <p>默念一次你的問題。讓注意力停在「${escapeHtml(topicLabels[state.topic])}」這件事上。</p>
       </div>
       <div class="panel calm-panel">
         <div class="question-card">
@@ -267,7 +284,7 @@ function renderSpread() {
       <div class="copy">
         <p class="eyebrow">Step 03</p>
         <h2>選擇牌陣</h2>
-        <p>時間之流和聖三角會由系統直接抽出三張牌。二選一則會讓你依序抽出現況、A 路線與 B 路線。</p>
+        <p>時間之流與聖三角會直接抽三張牌。二選一會依序抽出現況、A 路線與 B 路線。</p>
       </div>
       <form class="panel" id="spreadForm">
         <div class="choice-grid spread-grid" role="radiogroup" aria-label="選擇牌陣">
@@ -288,7 +305,7 @@ function renderDetails() {
       <div class="copy">
         <p class="eyebrow">Step 04</p>
         <h2>先定義 A 與 B</h2>
-        <p>二選一開始前，請先想好 A 路線和 B 路線的內容。名稱可以簡短，但兩條路最好是你真的正在比較的選項。</p>
+        <p>開始前先寫下 A 路線和 B 路線。名稱簡短即可，內容請對應你正在比較的兩個選項。</p>
       </div>
       <form class="panel" id="choiceForm">
         <div class="field">
@@ -346,7 +363,7 @@ function renderResult() {
         <div class="copy result-heading">
           <p class="eyebrow">Result</p>
           <h2>牌面結果</h2>
-          <p>${escapeHtml(topicLabels[state.topic])} · ${escapeHtml(spreads[state.spread].name)}。以下只列出牌位與傳統牌義，解讀者可以依問題自行說明。</p>
+          <p>${escapeHtml(topicLabels[state.topic])} · ${escapeHtml(spreads[state.spread].name)}。以下列出牌位與傳統牌義，解讀者可依問題說明。</p>
         </div>
         <div class="result-summary" id="resultCapture">
           <div class="question-card">
@@ -356,7 +373,7 @@ function renderResult() {
           <div class="result-list">
             ${state.drawn.map((drawn, index) => resultCardMarkup(drawn, labels[index], index)).join("")}
           </div>
-          <p class="source">牌義參考 <a href="${SOURCE_URL}" target="_blank" rel="noreferrer">A. E. Waite《The Pictorial Key to the Tarot》(1911)</a>，中文為摘要整理。</p>
+          <p class="source">牌義參考 <a href="${SOURCE_URL}" target="_blank" rel="noreferrer">A. E. Waite《The Pictorial Key to the Tarot》(1911)</a>，中文為摘要整理。牌面圖像取自 <a href="${IMAGE_SOURCE_URL}" target="_blank" rel="noreferrer">Wikimedia Commons Rider-Waite 1909</a>。</p>
         </div>
         <div class="actions">
           <button class="button" type="button" id="saveResult">複製與儲存結果</button>
@@ -510,25 +527,11 @@ function cardMarkup(drawn, extraClass = "") {
       <div class="tarot-card-inner">
         <div class="card-back"></div>
         <div class="card-front">
-          ${spriteSvg(drawn.card.spriteIndex, drawn.card.zh)}
+          <img class="card-art" src="${drawn.card.image}" alt="${escapeHtml(drawn.card.zh)}" loading="lazy" referrerpolicy="no-referrer" />
         </div>
       </div>
     </div>
   `;
-}
-
-function spriteSvg(spriteIndex, label) {
-  const { sx, sy, sw, sh } = spriteCell(spriteIndex);
-  return `
-    <svg class="card-art" viewBox="${sx} ${sy} ${sw} ${sh}" preserveAspectRatio="xMidYMid slice" role="img" aria-label="${escapeHtml(label)}">
-      <image href="${SPRITE_SRC}" x="0" y="0" width="${SPRITE_WIDTH}" height="${SPRITE_HEIGHT}"></image>
-    </svg>
-  `;
-}
-
-function spriteCell(spriteIndex) {
-  const [sx, sy, sw, sh] = CARD_BOXES[spriteIndex % CARD_BOXES.length];
-  return { sx, sy, sw, sh };
 }
 
 function activeLabels() {
@@ -664,6 +667,8 @@ function buildResultText() {
 
   lines.push("牌義參考：A. E. Waite《The Pictorial Key to the Tarot》(1911)");
   lines.push(SOURCE_URL);
+  lines.push("牌面圖像：Wikimedia Commons Rider-Waite 1909");
+  lines.push(IMAGE_SOURCE_URL);
   return lines.join("\n");
 }
 
@@ -697,13 +702,13 @@ async function renderResultImage() {
   ctx.font = "32px serif";
   drawWrapped(ctx, state.question || "我想看清楚這件事目前的狀態。", margin, 196, width - margin * 2, 44);
 
-  const sprite = await loadImage(SPRITE_SRC);
+  const cardImages = await Promise.all(blocks.map((block) => loadImage(block.drawn.card.image)));
   let y = 300;
   blocks.forEach((block, index) => {
     ctx.fillStyle = "rgba(255,255,255,0.045)";
     roundRect(ctx, margin - 20, y - 20, width - margin * 2 + 40, block.height + 40, 10);
     ctx.fill();
-    drawSpriteCard(ctx, sprite, block.drawn, margin, y, cardW, cardH);
+    drawCardImage(ctx, cardImages[index], block.drawn, margin, y, cardW, cardH);
     ctx.fillStyle = "#d8ad5b";
     ctx.font = "24px serif";
     ctx.fillText(String(index + 1).padStart(2, "0"), margin + cardW + 34, y + 28);
@@ -718,24 +723,23 @@ async function renderResultImage() {
 
   ctx.fillStyle = "#c9bda6";
   ctx.font = "22px serif";
-  ctx.fillText("牌義參考 A. E. Waite《The Pictorial Key to the Tarot》(1911)，中文為摘要整理。", margin, height - 54);
+  ctx.fillText("牌義參考 A. E. Waite《The Pictorial Key to the Tarot》(1911)；牌面圖像取自 Wikimedia Commons。", margin, height - 54);
 
   return new Promise((resolve, reject) => {
     canvas.toBlob((blob) => blob ? resolve(blob) : reject(new Error("canvas export failed")), "image/png", 0.96);
   });
 }
 
-function drawSpriteCard(ctx, sprite, drawn, x, y, w, h) {
-  const { sx, sy, sw, sh } = spriteCell(drawn.card.spriteIndex);
+function drawCardImage(ctx, image, drawn, x, y, w, h) {
   ctx.save();
   roundRect(ctx, x, y, w, h, 8);
   ctx.clip();
   if (drawn.reversed) {
     ctx.translate(x + w / 2, y + h / 2);
     ctx.rotate(Math.PI);
-    ctx.drawImage(sprite, sx, sy, sw, sh, -w / 2, -h / 2, w, h);
+    ctx.drawImage(image, -w / 2, -h / 2, w, h);
   } else {
-    ctx.drawImage(sprite, sx, sy, sw, sh, x, y, w, h);
+    ctx.drawImage(image, x, y, w, h);
   }
   ctx.restore();
 }
@@ -743,6 +747,7 @@ function drawSpriteCard(ctx, sprite, drawn, x, y, w, h) {
 function loadImage(src) {
   return new Promise((resolve, reject) => {
     const image = new Image();
+    image.crossOrigin = "anonymous";
     image.onload = () => resolve(image);
     image.onerror = reject;
     image.src = src;
