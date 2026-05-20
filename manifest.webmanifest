@@ -1,0 +1,18 @@
+{
+  "name": "隅星辰",
+  "short_name": "隅星辰",
+  "description": "引導式偉特塔羅抽牌工具，提供牌陣、抽牌儀式與傳統牌義查詢。",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#151311",
+  "theme_color": "#151311",
+  "icons": [
+    {
+      "src": "assets/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

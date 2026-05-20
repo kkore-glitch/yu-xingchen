@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="隅星辰">
+  <rect width="512" height="512" rx="96" fill="#151311"/>
+  <circle cx="256" cy="256" r="184" fill="none" stroke="#5f9e98" stroke-width="10" opacity=".72"/>
+  <path d="M141 269c49-74 137-90 217-38 22 14 39 31 50 43-14 13-31 27-52 39-84 48-169 27-215-44Z" fill="none" stroke="#f0d18a" stroke-width="18" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M358 231c28-30 53-45 80-51-7 29-22 55-46 78 24 24 39 50 46 79-27-7-52-22-80-52" fill="none" stroke="#f0d18a" stroke-width="18" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="207" cy="248" r="10" fill="#f0d18a"/>
+  <path d="M157 142l17 43 43 17-43 17-17 43-17-43-43-17 43-17 17-43Z" fill="#d8ad5b"/>
+  <path d="M316 86l10 25 25 10-25 10-10 25-10-25-25-10 25-10 10-25Z" fill="#5f9e98"/>
+</svg>

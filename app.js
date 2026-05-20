@@ -1,3 +1,19 @@
+const SOURCE_URL = "https://sacred-texts.com/tarot/pkt/index.htm";
+const SPRITE_SRC = "assets/tarot-sprite.png";
+const SPRITE_WIDTH = 1402;
+const SPRITE_HEIGHT = 1122;
+const CARD_RATIO = 70 / 121;
+const STEPS = ["question", "focus", "spread", "details", "draw", "result"];
+const CARD_BOXES = [
+  [3, 4, 117, 185], [122, 4, 118, 185], [241, 4, 119, 185], [362, 4, 119, 185], [482, 4, 119, 185], [603, 4, 118, 185], [723, 4, 117, 185], [842, 4, 118, 185], [962, 4, 119, 185], [1083, 4, 118, 185], [1203, 4, 117, 185],
+  [3, 190, 117, 181], [122, 190, 118, 181], [241, 190, 119, 181], [362, 190, 119, 181], [482, 190, 119, 181], [603, 190, 118, 181], [723, 190, 117, 181], [842, 190, 118, 181], [962, 190, 119, 181], [1083, 190, 118, 181], [1203, 190, 117, 181],
+  [3, 372, 117, 168], [122, 372, 118, 168], [241, 372, 119, 168], [362, 372, 119, 168], [482, 372, 119, 168], [603, 372, 118, 168], [723, 372, 117, 168], [842, 372, 118, 168], [962, 372, 119, 168], [1083, 372, 118, 168], [1203, 372, 117, 168],
+  [3, 541, 117, 162], [122, 541, 118, 162], [241, 541, 119, 162], [362, 541, 119, 162], [482, 541, 119, 162], [603, 541, 118, 162], [723, 541, 117, 162], [842, 541, 118, 162], [962, 541, 119, 162], [1083, 541, 118, 162], [1203, 541, 117, 162],
+  [3, 704, 117, 158], [122, 704, 118, 158], [241, 704, 119, 158], [362, 704, 119, 158], [482, 704, 119, 158], [603, 704, 118, 158], [723, 704, 117, 158], [842, 704, 118, 158], [962, 704, 119, 158], [1083, 704, 118, 158], [1203, 704, 117, 158],
+  [3, 864, 117, 133], [122, 863, 118, 134], [241, 864, 119, 133], [362, 864, 119, 133], [482, 864, 119, 133], [603, 863, 118, 134], [723, 863, 117, 134], [842, 863, 118, 134], [962, 863, 119, 134], [1083, 863, 118, 134], [1203, 864, 117, 133],
+  [3, 998, 109, 122], [113, 998, 106, 122], [219, 998, 106, 122], [326, 998, 105, 122], [432, 998, 111, 122], [544, 998, 112, 122], [656, 998, 112, 122], [769, 998, 110, 122], [880, 998, 106, 122], [987, 998, 108, 122], [1096, 998, 100, 122],
+];
+
 const topicLabels = {
   work: "工作",
   love: "愛情",
@@ -5,205 +21,555 @@ const topicLabels = {
   self: "自我",
 };
 
+const topicHints = {
+  work: "職涯、專案、合作、資源與方向",
+  love: "曖昧、伴侶、關係狀態與相處節奏",
+  family: "家人、照顧、界線與長期互動",
+  self: "自我理解、狀態整理與內在需求",
+};
+
 const spreads = {
   flow: {
     name: "時間之流",
     labels: ["過去的根", "現在的流向", "未來的可能"],
-    prompt: "時間之流會讓三張牌從過去、現在與未來的脈絡中浮現。",
+    hint: "適合想看事情如何形成、現在在哪裡，以及後續可能往哪裡走。",
   },
   triangle: {
     name: "聖三角",
-    labels: ["目前狀況", "主要阻礙", "可行建議"],
-    prompt: "聖三角會看見事件表層、卡住之處，以及可被採取的下一步。",
+    labels: ["目前狀況", "主要阻礙", "可行方向"],
+    hint: "適合想把問題拆成現況、卡點與可以參考的行動方向。",
   },
   choice: {
     name: "二選一",
     labels: ["共同現況", "A 路線過程", "A 路線結果", "B 路線過程", "B 路線結果"],
-    prompt: "先把 A 與 B 兩條路線想清楚，再一張一張抽出。",
+    hint: "適合已經有兩個選項，想比較兩條路的過程與結果。",
   },
 };
 
-const majorCards = [
-  ["愚者", "The Fool", "旅程", "天真、冒險、開端", "魯莽、逃避、準備不足", "cliff"],
-  ["魔術師", "The Magician", "意志", "資源到位、主動創造", "分心、誇大、工具未整合", "wand"],
-  ["女祭司", "The High Priestess", "直覺", "靜觀、秘密、內在智慧", "遲疑、封閉、訊息不明", "moon"],
-  ["皇后", "The Empress", "滋養", "豐盛、照顧、自然生長", "過度付出、停滯、界線鬆動", "garden"],
-  ["皇帝", "The Emperor", "秩序", "規範、責任、穩固結構", "僵化、控制、權威壓力", "throne"],
-  ["教皇", "The Hierophant", "傳承", "學習、制度、承諾", "墨守成規、外在期待", "keys"],
-  ["戀人", "The Lovers", "選擇", "吸引、結盟、價值一致", "分歧、誘惑、承諾搖擺", "lovers"],
-  ["戰車", "The Chariot", "推進", "意志集中、勝利、掌舵", "失控、硬撐、方向拉扯", "chariot"],
-  ["力量", "Strength", "柔韌", "耐心、溫柔制衡、勇氣", "壓抑、逞強、心力透支", "lion"],
-  ["隱者", "The Hermit", "尋光", "獨處、內省、找回答案", "孤立、退縮、過度懷疑", "lantern"],
-  ["命運之輪", "Wheel of Fortune", "轉機", "循環、機會、局勢翻轉", "延宕、反覆、被動等待", "wheel"],
-  ["正義", "Justice", "衡量", "公平、契約、因果清楚", "偏頗、逃避責任、失衡", "scales"],
-  ["吊人", "The Hanged Man", "換位", "暫停、犧牲、轉換視角", "拖延、委屈、卡住不動", "hanged"],
-  ["死神", "Death", "更新", "結束、蛻變、清理舊殼", "抗拒改變、藕斷絲連", "horse"],
-  ["節制", "Temperance", "調和", "整合、修復、節奏穩定", "失調、急躁、能量分散", "cups"],
-  ["惡魔", "The Devil", "牽制", "慾望、執著、現實束縛", "鬆綁、看見依附、戒除", "chains"],
-  ["高塔", "The Tower", "震動", "真相爆開、結構重建", "避震、拖住崩塌、恐懼變動", "tower"],
-  ["星星", "The Star", "希望", "療癒、願景、重新信任", "失望、理想過高、信心不足", "star"],
-  ["月亮", "The Moon", "迷霧", "潛意識、夢境、不確定", "疑慮消散、直覺校準", "moonpath"],
-  ["太陽", "The Sun", "明朗", "成功、坦率、喜悅", "延遲的好消息、曝光過度", "sun"],
-  ["審判", "Judgement", "召喚", "覺醒、回應使命、重新評估", "自責、逃避召喚、遲疑", "trumpet"],
-  ["世界", "The World", "完成", "完成、整合、抵達新階段", "未竟之事、收尾不足", "wreath"],
-];
-
-const suitData = {
-  wands: { zh: "權杖", en: "Wands", symbol: "♣", element: "火", color: "#9d3d2d", upright: "行動、熱情、企圖心", reversed: "衝動、耗竭、方向不穩" },
-  cups: { zh: "聖杯", en: "Cups", symbol: "♥", element: "水", color: "#2f6f95", upright: "情感、關係、感受流動", reversed: "情緒淤塞、期待落差" },
-  swords: { zh: "寶劍", en: "Swords", symbol: "♦", element: "風", color: "#6a6f7f", upright: "思辨、真相、決斷", reversed: "焦慮、誤解、言語傷害" },
-  pentacles: { zh: "星幣", en: "Pentacles", symbol: "●", element: "土", color: "#82702d", upright: "資源、身體、物質穩定", reversed: "遲滯、匱乏感、分配失衡" },
+const positionNotes = {
+  flow: [
+    "事情已累積的背景、舊因素、先前選擇或正在影響現在的根源。",
+    "此刻最明顯的狀態、正在運作的能量，以及眼前需要看見的主題。",
+    "依照目前狀態延伸出的趨勢、可能發展或後續氣氛。",
+  ],
+  triangle: [
+    "事件表面與核心正在呈現的樣子，先把現況放在桌上。",
+    "卡住、拖延、衝突或需要留意的因素，並不一定是壞事，但需要被看見。",
+    "牌陣中作為參考態度、處理方式或下一步方向的位置。",
+  ],
+  choice: [
+    "A 與 B 兩條路共同面對的背景與起點。",
+    "選擇 A 時，中途可能呈現的狀態或需要經過的階段。",
+    "A 路線依目前能量延伸出的可能結果或收束狀態。",
+    "選擇 B 時，中途可能呈現的狀態或需要經過的階段。",
+    "B 路線依目前能量延伸出的可能結果或收束狀態。",
+  ],
 };
 
-const pipNames = [
-  ["Ace", "一"], ["Two", "二"], ["Three", "三"], ["Four", "四"], ["Five", "五"],
-  ["Six", "六"], ["Seven", "七"], ["Eight", "八"], ["Nine", "九"], ["Ten", "十"],
-  ["Page", "侍者"], ["Knight", "騎士"], ["Queen", "皇后"], ["King", "國王"],
+const majorCards = [
+  ["愚者", "The Fool", "愚行、狂熱、放縱、失序與未定形的衝動。", "疏忽、空缺、冷漠、虛榮與無結果的行動。"],
+  ["魔術師", "The Magician", "技藝、機敏、意志、自信，以及能運用手邊工具。", "技巧誤用、心神不寧、欺瞞、失手或能力未能正當發揮。"],
+  ["女祭司", "The High Priestess", "秘密、神祕、尚未揭露的未來、直覺與隱藏知識。", "表面知識、激情、過度主觀，或隱情被誤讀。"],
+  ["皇后", "The Empress", "豐饒、行動、主動性、孕育、成形與感官世界。", "遲疑、真相浮現、事情揭開，但也可能失去穩定。"],
+  ["皇帝", "The Emperor", "穩固、權力、保護、實現、秩序與掌控。", "不成熟、阻礙、控制失衡，或權威變得僵硬。"],
+  ["教皇", "The Hierophant", "婚姻、同盟、慈悲、傳統、制度與精神指引。", "過度順從、脆弱、反常規，或信念與制度的拉扯。"],
+  ["戀人", "The Lovers", "吸引、愛、美、考驗、選擇與關係中的試煉。", "失敗、分離、選擇失準，或情感考驗未能通過。"],
+  ["戰車", "The Chariot", "勝利、克服、援助、掌控與意志推進。", "失控、爭端、敗退、方向錯置或掌控力下降。"],
+  ["力量", "Strength", "力量、勇氣、耐心、柔性控制與內在韌性。", "軟弱、濫用力量、失去耐性或意志不穩。"],
+  ["隱者", "The Hermit", "審慎、尋求、內省、指引與深思後的判斷。", "孤立、恐懼、過度保守、隱瞞或拒絕建議。"],
+  ["命運之輪", "Wheel of Fortune", "命運、變化、轉折、幸運與循環。", "延遲、壞運、循環受阻或變化不如預期。"],
+  ["正義", "Justice", "公平、正義、因果、法律、平衡與清楚判斷。", "不公、偏見、複雜化、失衡或判斷失準。"],
+  ["吊人", "The Hanged Man", "智慧、試煉、犧牲、暫停與換位觀看。", "無意義的犧牲、自我中心、停滯或抗拒轉念。"],
+  ["死神", "Death", "結束、轉變、死亡象徵、舊狀態的終止。", "遲滯、惰性、睡眠、改變延後或無法斷尾。"],
+  ["節制", "Temperance", "節制、調和、管理、混合與中庸。", "衝突、分裂、失調、過量或關係不合。"],
+  ["惡魔", "The Devil", "束縛、誘惑、物質執著、暴力力量與被牽制。", "鬆綁、弱化、擺脫束縛，但也可能仍受恐懼牽制。"],
+  ["高塔", "The Tower", "突變、崩塌、災難、舊結構破裂與真相震動。", "壓抑中的崩塌、拖延的破局、受困或不願放手。"],
+  ["星星", "The Star", "希望、明亮前景、洞察、靈感與精神上的慰藉。", "失望、驕傲、信心不足，或希望未能落地。"],
+  ["月亮", "The Moon", "隱憂、迷霧、欺瞞、恐懼、夢境與潛意識。", "不穩定、較小的欺瞞、危機漸退但仍未明朗。"],
+  ["太陽", "The Sun", "快樂、成功、滿足、活力與清楚可見的成果。", "延遲的成功、較弱的幸福，或喜悅未完全展開。"],
+  ["審判", "Judgement", "更新、召喚、判斷、甦醒與位置改變。", "遲疑、軟弱、簡單判斷失準，或不願回應召喚。"],
+  ["世界", "The World", "完成、成功、旅程、整合與一個循環的圓滿。", "停滯、固定、慣性、完成受阻或不願跨出下一步。"],
 ];
 
-const pipTone = {
-  1: ["新的火種", "種子剛落下，力量真實但仍需照料"],
-  2: ["權衡與等待", "兩個方向同時牽動，選擇比速度更重要"],
-  3: ["初步擴張", "已能看見回應，但仍要確認合作節奏"],
-  4: ["穩定或停住", "安全感增加，也可能因安逸而不想移動"],
-  5: ["摩擦與競爭", "矛盾被推上檯面，需要面對而非粉飾"],
-  6: ["回應與修復", "有人願意伸手，局面開始有交換與善意"],
-  7: ["防守與堅持", "立場需要被保護，但別把所有人都當成敵手"],
-  8: ["加速與訊息", "事情移動很快，細節與節奏會決定品質"],
-  9: ["累積後的警戒", "快抵達前仍有壓力，別因疲倦放棄判斷"],
-  10: ["完成與負荷", "成果與責任一起到來，必須重新分配重量"],
-  11: ["學習者的訊號", "新消息或新態度出現，仍帶著試探性"],
-  12: ["推進者的力量", "能量明顯向前，但需要管理衝刺的代價"],
-  13: ["成熟的感受力", "更能掌握局勢，也要避免把照顧變成掌控"],
-  14: ["穩固的主導", "資源與權責集中，適合定規則與承擔結果"],
+const minorCards = [
+  ["wands", "權杖", "Wands", "Ace", "一", "創造、開始、事業、誕生與新的能量。", "衰退、挫敗、空轉、開始受阻或喜悅被遮蔽。"],
+  ["wands", "權杖", "Wands", "Two", "二", "財富、遠景、成就，但也帶有不滿與等待。", "驚訝、恐懼、迷惑，局勢超出預期。"],
+  ["wands", "權杖", "Wands", "Three", "三", "已建立的力量、貿易、合作與向外拓展。", "辛勞終止、麻煩收束，但成果仍有限。"],
+  ["wands", "權杖", "Wands", "Four", "四", "安居、和諧、收成、休息與家庭式的歡慶。", "繁榮、美化、表面愉快，或穩定感較浮動。"],
+  ["wands", "權杖", "Wands", "Five", "五", "競爭、衝突、模擬戰、爭奪與意見交鋒。", "爭訟、詭計、糾紛，競爭變得不正當。"],
+  ["wands", "權杖", "Wands", "Six", "六", "勝利、好消息、成功、眾望所歸與凱旋。", "遲延、憂懼、消息未至或勝利不穩。"],
+  ["wands", "權杖", "Wands", "Seven", "七", "勇氣、抵抗、談判、在壓力中守住位置。", "困惑、尷尬、焦慮，立場難以維持。"],
+  ["wands", "權杖", "Wands", "Eight", "八", "快速行動、訊息、急速發展與事情逼近。", "嫉妒、爭吵、內部衝突或進展受干擾。"],
+  ["wands", "權杖", "Wands", "Nine", "九", "防備、堅持、延遲、在壓力後仍守住力量。", "阻礙、逆境、災厄或防線疲弱。"],
+  ["wands", "權杖", "Wands", "Ten", "十", "壓迫、負擔、責任過重，但也代表承擔成果。", "困難、陰謀、反覆與負擔失控。"],
+  ["wands", "權杖", "Wands", "Page", "侍者", "信使、忠誠的人、消息、活力與觀察中的年輕能量。", "壞消息、猶豫、流言、訊息失準。"],
+  ["wands", "權杖", "Wands", "Knight", "騎士", "離開、遷移、變動、熱烈行動與快速轉向。", "破裂、分離、干擾、行動被打斷。"],
+  ["wands", "權杖", "Wands", "Queen", "皇后", "親切、貞潔、友善、熱情與可靠的支持。", "嫉妒、反覆、狹隘或善意被扭曲。"],
+  ["wands", "權杖", "Wands", "King", "國王", "誠實、成熟、熱情、領導與實際的善意。", "嚴厲、固執、過度控制，或權威不易親近。"],
+  ["cups", "聖杯", "Cups", "Ace", "一", "喜悅、滿足、真心、情感的居所與愛的開始。", "虛情、情感不穩、變動、關係中的不可靠。"],
+  ["cups", "聖杯", "Cups", "Two", "二", "愛、友誼、結合、和解與彼此吸引。", "假愛、誤會、愚行、關係中的不一致。"],
+  ["cups", "聖杯", "Cups", "Three", "三", "圓滿、豐盛、慶祝、團聚與事情告一段落。", "過度、享樂、拖延，或成果來得太匆促。"],
+  ["cups", "聖杯", "Cups", "Four", "四", "厭倦、冷淡、倦怠、對既有事物失去興趣。", "新鮮感、新關係、新指示或重新打開的可能。"],
+  ["cups", "聖杯", "Cups", "Five", "五", "失落、失望、遺憾；但仍有部分保留。", "消息、回返、重新連結，舊事有機會再被拾起。"],
+  ["cups", "聖杯", "Cups", "Six", "六", "過去、回憶、童年、舊事物與單純情感。", "未來、更新、即將到來的新方向。"],
+  ["cups", "聖杯", "Cups", "Seven", "七", "幻想、想像、倒影、選項繁多但未必實在。", "意志、決心、欲望收束，開始辨認真正目標。"],
+  ["cups", "聖杯", "Cups", "Eight", "八", "放棄、離開、成功後的退去、情感轉淡。", "大喜、宴樂、節慶或情感重新被點燃。"],
+  ["cups", "聖杯", "Cups", "Nine", "九", "滿足、安逸、物質與情感上的舒適。", "錯誤、缺陷、不完美，滿足感打了折扣。"],
+  ["cups", "聖杯", "Cups", "Ten", "十", "家庭幸福、內心安定、和諧與長久的滿足。", "家庭或情感失和、憤怒、暴力情緒或心意不真。"],
+  ["cups", "聖杯", "Cups", "Page", "侍者", "年輕溫和的人、學習、消息、沉思與情感萌芽。", "誘惑、欺瞞、情感不成熟，或訊息不可靠。"],
+  ["cups", "聖杯", "Cups", "Knight", "騎士", "到來、邀請、靠近、提議與友善的接觸。", "欺詐、策略、虛飾、表面禮貌下的不真。"],
+  ["cups", "聖杯", "Cups", "Queen", "皇后", "善良、愛、想像力、直覺與能給予情感支持的人。", "不可靠、變動、過度想像，或情感判斷失準。"],
+  ["cups", "聖杯", "Cups", "King", "國王", "公平、藝術、學問、法律、責任感與成熟情感。", "雙面、欺瞞、不義、醜聞或情感上的不誠實。"],
+  ["swords", "寶劍", "Swords", "Ace", "一", "勝利、征服、力量、清楚判斷與切開局面的能力。", "災難、暴力、暴政、力量反噬或判斷過硬。"],
+  ["swords", "寶劍", "Swords", "Two", "二", "平衡、停戰、克制、保留與暫時的和諧。", "欺瞞、虛假、雙重性，表面的平衡不可靠。"],
+  ["swords", "寶劍", "Swords", "Three", "三", "分離、悲傷、延遲、破裂、移除與心痛。", "混亂、錯誤、精神不安或傷痛未能整理。"],
+  ["swords", "寶劍", "Swords", "Four", "四", "休息、退隱、暫停、警醒與恢復。", "預防、節制、經濟安排，或休息後的重新部署。"],
+  ["swords", "寶劍", "Swords", "Five", "五", "失敗、羞辱、破壞、損失與不光彩的勝負。", "弱化、葬送、結果不確定，損失仍在延續。"],
+  ["swords", "寶劍", "Swords", "Six", "六", "旅程、轉移、過渡、路線與從困境中移開。", "告白、公開、宣告或原本隱藏的事情浮現。"],
+  ["swords", "寶劍", "Swords", "Seven", "七", "計畫、企圖、策略、希望與不完全正面的取巧。", "建議、忠告、指引，或策略需要被重新審視。"],
+  ["swords", "寶劍", "Swords", "Eight", "八", "限制、危機、束縛、壞消息與無法自由行動。", "不安、意外、背叛、困難仍未完全解除。"],
+  ["swords", "寶劍", "Swords", "Nine", "九", "失敗、絕望、痛苦、擔憂、惡夢與精神壓力。", "懷疑、羞愧、禁錮、恐懼仍然存在。"],
+  ["swords", "寶劍", "Swords", "Ten", "十", "痛苦、終結、淚水、荒涼與重擊後的狀態。", "短暫利益、好轉有限、成功不穩或只是暫緩。"],
+  ["swords", "寶劍", "Swords", "Page", "侍者", "警覺、偵查、監視、權威訊息與敏銳觀察。", "意外、無力、疾病或觀察變成猜疑。"],
+  ["swords", "寶劍", "Swords", "Knight", "騎士", "勇敢、技巧、衝鋒、戰鬥精神與強烈行動。", "魯莽、無能、浪費力量或衝動失控。"],
+  ["swords", "寶劍", "Swords", "Queen", "皇后", "悲傷、寡居、獨立、清醒判斷與冷峻智慧。", "惡意、偏狹、欺瞞、尖刻或判斷傷人。"],
+  ["swords", "寶劍", "Swords", "King", "國王", "判斷、命令、權威、法律與理性控制。", "殘酷、邪惡意圖、濫權或冷酷的判決。"],
+  ["pentacles", "星幣", "Pentacles", "Ace", "一", "財富、滿足、黃金、穩定資源與物質開始。", "財富的負面、貪婪、錯誤消息或資源受阻。"],
+  ["pentacles", "星幣", "Pentacles", "Two", "二", "娛樂、往來、變動中的平衡、消息與多工。", "假裝的愉快、勉強維持、消息或安排不穩。"],
+  ["pentacles", "星幣", "Pentacles", "Three", "三", "技藝、工作、交易、熟練與被看見的專業。", "平庸、幼稚、弱點、技術或成果不足。"],
+  ["pentacles", "星幣", "Pentacles", "Four", "四", "持有、財產安全、禮物、遺產與保守累積。", "延遲、懸而未決、阻礙或過度守成。"],
+  ["pentacles", "星幣", "Pentacles", "Five", "五", "貧困、物質困難、孤立、缺乏與現實壓力。", "混亂、失序、破敗，但困境型態開始改變。"],
+  ["pentacles", "星幣", "Pentacles", "Six", "六", "贈與、分享、報酬、慈善與資源分配。", "嫉妒、貪欲、欲望不均或施受關係失衡。"],
+  ["pentacles", "星幣", "Pentacles", "Seven", "七", "金錢、等待收成、事業盤算與成果未定。", "焦慮、急躁、金錢壓力或回報不如預期。"],
+  ["pentacles", "星幣", "Pentacles", "Eight", "八", "工作、學徒、技能、專注與逐步累積。", "虛榮、野心落空、偷懶或技術使用不正。"],
+  ["pentacles", "星幣", "Pentacles", "Nine", "九", "謹慎、安全、完成、獨立與舒適成果。", "欺瞞、壞信、失竊或表面安穩下的不可靠。"],
+  ["pentacles", "星幣", "Pentacles", "Ten", "十", "財富、家族、繼承、穩固結構與長期資源。", "偶然、風險、失竊、家庭或財務結構不穩。"],
+  ["pentacles", "星幣", "Pentacles", "Page", "侍者", "學習、專注、研究、消息與對實際事物的投入。", "浪費、散漫、壞消息或無法專心累積。"],
+  ["pentacles", "星幣", "Pentacles", "Knight", "騎士", "實用、責任、耐心、可靠執行與穩定推進。", "停滯、懶散、漫不經心，或責任變成沉重。"],
+  ["pentacles", "星幣", "Pentacles", "Queen", "皇后", "富足、慷慨、安全、實際照顧與資源管理。", "疑心、依賴、忽略現實，或安全感失衡。"],
+  ["pentacles", "星幣", "Pentacles", "King", "國王", "商業、能力、安定、成功、成熟資源與可靠掌控。", "貪婪、腐敗、固執、風險與物質上的失德。"],
+];
+
+const deck = buildDeck();
+const stage = document.querySelector("#stage");
+const stepIndicator = document.querySelector("#stepIndicator");
+
+const state = {
+  step: "question",
+  topic: "work",
+  question: "",
+  spread: "flow",
+  routeA: "",
+  routeB: "",
+  drawn: [],
+  drawComplete: false,
+  isDrawing: false,
+  status: "",
 };
 
 function buildDeck() {
-  const majors = majorCards.map((card, index) => ({
+  const majors = majorCards.map(([zh, en, upright, reversed], index) => ({
     id: `major-${index}`,
     arcana: "major",
-    number: index,
-    zh: card[0],
-    en: card[1],
-    theme: card[2],
-    upright: card[3],
-    reversed: card[4],
-    motif: card[5],
+    zh,
+    en,
+    upright,
+    reversed,
+    spriteIndex: index,
   }));
 
-  const minors = Object.entries(suitData).flatMap(([suit, meta]) =>
-    pipNames.map(([enRank, zhRank], index) => {
-      const rank = index + 1;
-      return {
-        id: `${suit}-${rank}`,
-        arcana: "minor",
-        suit,
-        rank,
-        zh: `${meta.zh}${zhRank}`,
-        en: `${enRank} of ${meta.en}`,
-        theme: `${meta.element}元素`,
-        upright: `${meta.upright}，${pipTone[rank][0]}`,
-        reversed: `${meta.reversed}，${pipTone[rank][0]}失衡`,
-        motif: suit,
-      };
-    }),
-  );
+  const minors = minorCards.map(([suit, suitZh, suitEn, rankEn, rankZh, upright, reversed], index) => ({
+    id: `${suit}-${rankEn.toLowerCase()}`,
+    arcana: "minor",
+    suit,
+    zh: `${suitZh}${rankZh}`,
+    en: `${rankEn} of ${suitEn}`,
+    upright,
+    reversed,
+    spriteIndex: majorCards.length + index,
+  }));
+
   return [...majors, ...minors];
 }
 
-const deck = buildDeck();
-let currentSpread = "flow";
-let drawnCards = [];
-let choiceIndex = 0;
+function render() {
+  renderStepIndicator();
+  const views = {
+    question: renderQuestion,
+    focus: renderFocus,
+    spread: renderSpread,
+    details: renderDetails,
+    draw: renderDraw,
+    result: renderResult,
+  };
+  stage.innerHTML = views[state.step]();
+  bindScreenEvents();
+}
 
-const form = document.querySelector("#readingForm");
-const choiceFields = document.querySelector("#choiceFields");
-const deckEl = document.querySelector("#deck");
-const ritualText = document.querySelector("#ritualText");
-const drawArea = document.querySelector("#drawArea");
-const manualDraw = document.querySelector("#manualDraw");
-const drawNext = document.querySelector("#drawNext");
-const manualHint = document.querySelector("#manualHint");
-const results = document.querySelector("#results");
-const resultList = document.querySelector("#resultList");
-const summary = document.querySelector("#summary");
-const startButton = document.querySelector("#startButton");
-const resetButton = document.querySelector("#resetButton");
+function renderStepIndicator() {
+  const visibleSteps = state.spread === "choice" ? STEPS : STEPS.filter((step) => step !== "details");
+  stepIndicator.innerHTML = visibleSteps.map((step) => (
+    `<span class="step-dot ${step === state.step ? "is-active" : ""}" title="${stepLabel(step)}"></span>`
+  )).join("");
+}
 
-document.querySelectorAll("input[name='spread']").forEach((input) => {
-  input.addEventListener("change", () => {
-    currentSpread = input.value;
-    choiceFields.hidden = currentSpread !== "choice";
-    ritualText.textContent = spreads[currentSpread].prompt;
-    clearReading();
+function renderQuestion() {
+  return `
+    <section class="screen">
+      <div class="copy">
+        <p class="eyebrow">Step 01</p>
+        <h1>想問什麼事情？</h1>
+        <p>先選一個面向，再把問題寫成一句話。這裡不會替你做判決，最後只會給出牌位、正逆位與傳統牌義，方便解讀者自己延伸。</p>
+      </div>
+      <form class="panel" id="questionForm">
+        <div class="field">
+          <label for="questionInput">你的問題</label>
+          <textarea id="questionInput" maxlength="140" placeholder="例如：接下來三個月，我在目前工作上需要看見什麼？">${escapeHtml(state.question)}</textarea>
+        </div>
+        <div class="choice-grid topic-grid" role="radiogroup" aria-label="想問的面向">
+          ${Object.entries(topicLabels).map(([key, label]) => optionMarkup("topic", key, label, topicHints[key], state.topic === key)).join("")}
+        </div>
+        <div class="actions">
+          <button class="button" type="submit">下一步</button>
+        </div>
+      </form>
+    </section>
+  `;
+}
+
+function renderFocus() {
+  return `
+    <section class="screen">
+      <div class="copy">
+        <p class="eyebrow">Step 02</p>
+        <h2>把問題放在心裡</h2>
+        <p>默念一次你的問題。不要急著尋找答案，只要確認你現在問的是「${escapeHtml(topicLabels[state.topic])}」這件事。</p>
+      </div>
+      <div class="panel calm-panel">
+        <div class="question-card">
+          <span>${escapeHtml(topicLabels[state.topic])}</span>
+          <strong>${escapeHtml(state.question || "我想看清楚這件事目前的狀態。")}</strong>
+        </div>
+        <div class="breath-ring" aria-hidden="true"></div>
+        <p class="muted">準備好後，再選擇適合這個問題的牌陣。</p>
+        <div class="actions">
+          <button class="button secondary" type="button" data-back="question">上一步</button>
+          <button class="button" type="button" data-next="spread">選擇牌陣</button>
+        </div>
+      </div>
+    </section>
+  `;
+}
+
+function renderSpread() {
+  return `
+    <section class="screen">
+      <div class="copy">
+        <p class="eyebrow">Step 03</p>
+        <h2>選擇牌陣</h2>
+        <p>時間之流和聖三角會由系統直接抽出三張牌。二選一則會讓你依序抽出現況、A 路線與 B 路線。</p>
+      </div>
+      <form class="panel" id="spreadForm">
+        <div class="choice-grid spread-grid" role="radiogroup" aria-label="選擇牌陣">
+          ${Object.entries(spreads).map(([key, spread]) => optionMarkup("spread", key, spread.name, spread.hint, state.spread === key)).join("")}
+        </div>
+        <div class="actions">
+          <button class="button secondary" type="button" data-back="focus">上一步</button>
+          <button class="button" type="submit">下一步</button>
+        </div>
+      </form>
+    </section>
+  `;
+}
+
+function renderDetails() {
+  return `
+    <section class="screen">
+      <div class="copy">
+        <p class="eyebrow">Step 04</p>
+        <h2>先定義 A 與 B</h2>
+        <p>二選一開始前，請先想好 A 路線和 B 路線的內容。名稱可以簡短，但兩條路最好是你真的正在比較的選項。</p>
+      </div>
+      <form class="panel" id="choiceForm">
+        <div class="field">
+          <label for="routeA">A 路線</label>
+          <input id="routeA" maxlength="36" value="${escapeHtml(state.routeA)}" placeholder="例如：留在原職、主動告白、搬出去住" />
+        </div>
+        <div class="field">
+          <label for="routeB">B 路線</label>
+          <input id="routeB" maxlength="36" value="${escapeHtml(state.routeB)}" placeholder="例如：接受新工作、保持距離、暫時觀察" />
+        </div>
+        <div class="actions">
+          <button class="button secondary" type="button" data-back="spread">上一步</button>
+          <button class="button" type="submit">開始抽牌</button>
+        </div>
+      </form>
+    </section>
+  `;
+}
+
+function renderDraw() {
+  const labels = activeLabels();
+  const drawnCount = state.drawn.length;
+  const readyToResult = state.drawComplete && drawnCount === labels.length;
+  const drawButtonText = state.spread === "choice"
+    ? (drawnCount ? `抽出第 ${drawnCount + 1} 張牌` : "抽出第一張現況牌")
+    : "開始洗牌抽牌";
+  const nextLabel = labels[drawnCount] || "牌面已成形";
+
+  return `
+    <section class="screen">
+      <div class="copy">
+        <p class="eyebrow">Step ${state.spread === "choice" ? "05" : "04"}</p>
+        <h2>${state.drawn.length ? "牌面正在展開" : "準備抽牌"}</h2>
+        <p>${drawInstruction(nextLabel)}</p>
+      </div>
+      <div class="panel">
+        ${state.drawn.length ? renderDrawnSlots(labels) : renderAltar()}
+        <div class="actions">
+          <button class="button secondary" type="button" data-back="${state.spread === "choice" ? "details" : "spread"}" ${state.isDrawing ? "disabled" : ""}>上一步</button>
+          ${readyToResult
+            ? `<button class="button" type="button" data-next="result">查看結果</button>`
+            : `<button class="button" type="button" id="drawButton" ${state.isDrawing ? "disabled" : ""}>${state.isDrawing ? "洗牌中" : drawButtonText}</button>`
+          }
+        </div>
+      </div>
+    </section>
+  `;
+}
+
+function renderResult() {
+  const labels = activeLabels();
+  return `
+    <section class="screen results-screen">
+      <div class="result-layout">
+        <div class="copy result-heading">
+          <p class="eyebrow">Result</p>
+          <h2>牌面結果</h2>
+          <p>${escapeHtml(topicLabels[state.topic])} · ${escapeHtml(spreads[state.spread].name)}。以下只列出牌位與傳統牌義，解讀者可以依問題自行說明。</p>
+        </div>
+        <div class="result-summary" id="resultCapture">
+          <div class="question-card">
+            <span>${escapeHtml(topicLabels[state.topic])} / ${escapeHtml(spreads[state.spread].name)}</span>
+            <strong>${escapeHtml(state.question || "我想看清楚這件事目前的狀態。")}</strong>
+          </div>
+          <div class="result-list">
+            ${state.drawn.map((drawn, index) => resultCardMarkup(drawn, labels[index], index)).join("")}
+          </div>
+          <p class="source">牌義參考 <a href="${SOURCE_URL}" target="_blank" rel="noreferrer">A. E. Waite《The Pictorial Key to the Tarot》(1911)</a>，中文為摘要整理。</p>
+        </div>
+        <div class="actions">
+          <button class="button" type="button" id="saveResult">複製與儲存結果</button>
+          <button class="button secondary" type="button" id="restart">重新開始</button>
+        </div>
+        <p class="status" id="saveStatus" aria-live="polite">${escapeHtml(state.status)}</p>
+      </div>
+    </section>
+  `;
+}
+
+function bindScreenEvents() {
+  document.querySelectorAll("[data-next]").forEach((button) => {
+    button.addEventListener("click", () => goTo(button.dataset.next));
   });
-});
+  document.querySelectorAll("[data-back]").forEach((button) => {
+    button.addEventListener("click", () => goTo(button.dataset.back));
+  });
 
-form.addEventListener("submit", async (event) => {
-  event.preventDefault();
-  const topic = selectedTopic();
-  if (!topic) {
-    ritualText.textContent = "請先選一個想問的面向，牌面才知道要往哪裡照亮。";
-    return;
+  const questionForm = document.querySelector("#questionForm");
+  if (questionForm) {
+    questionForm.addEventListener("submit", (event) => {
+      event.preventDefault();
+      state.question = document.querySelector("#questionInput").value.trim();
+      state.topic = document.querySelector("input[name='topic']:checked")?.value || "work";
+      goTo("focus");
+    });
   }
-  clearReading();
-  startButton.disabled = true;
-  deckEl.classList.add("shuffling");
-  ritualText.textContent = currentSpread === "choice"
-    ? "請在心裡穩住 A 與 B 的畫面。洗牌完成後，依序抽出五張牌。"
-    : "洗牌中，請把問題放在心裡，不需要用力，只要誠實。";
-  await pause(1200);
-  deckEl.classList.remove("shuffling");
-  startButton.disabled = false;
 
-  if (currentSpread === "choice") {
-    setupManualChoice();
-  } else {
-    drawnCards = drawMany(3);
-    renderSlots(spreads[currentSpread].labels, drawnCards);
-    revealSequentially(() => finishReading());
+  const spreadForm = document.querySelector("#spreadForm");
+  if (spreadForm) {
+    spreadForm.addEventListener("submit", (event) => {
+      event.preventDefault();
+      state.spread = document.querySelector("input[name='spread']:checked")?.value || "flow";
+      resetDraw();
+      goTo(state.spread === "choice" ? "details" : "draw");
+    });
   }
-});
 
-drawNext.addEventListener("click", () => {
-  if (choiceIndex >= spreads.choice.labels.length) return;
-  if (!drawnCards.length) drawArea.innerHTML = "";
-  const card = drawOne(drawnCards.map((item) => item.card.id));
-  drawnCards.push(card);
-  const labels = choiceLabels();
-  appendSlot(labels[choiceIndex], card, choiceIndex);
-  const currentCard = drawArea.querySelector(`[data-slot="${choiceIndex}"] .tarot-card`);
-  requestAnimationFrame(() => currentCard.classList.add("revealed"));
-  choiceIndex += 1;
-  drawNext.textContent = choiceIndex < labels.length ? `抽出第 ${choiceIndex + 1} 張牌` : "五張牌已抽齊";
-  manualHint.textContent = choiceIndex < labels.length ? labels[choiceIndex] : "牌面已成形，正在整理兩條路線的訊息。";
-  if (choiceIndex === labels.length) {
-    drawNext.disabled = true;
-    finishReading();
+  const choiceForm = document.querySelector("#choiceForm");
+  if (choiceForm) {
+    choiceForm.addEventListener("submit", (event) => {
+      event.preventDefault();
+      state.routeA = document.querySelector("#routeA").value.trim();
+      state.routeB = document.querySelector("#routeB").value.trim();
+      resetDraw();
+      goTo("draw");
+    });
   }
-});
 
-resetButton.addEventListener("click", clearReading);
+  const drawButton = document.querySelector("#drawButton");
+  if (drawButton) {
+    drawButton.addEventListener("click", () => {
+      if (state.spread === "choice") {
+        drawChoiceCard();
+      } else {
+        drawAutoSpread();
+      }
+    });
+  }
 
-function setupManualChoice() {
-  drawnCards = [];
-  choiceIndex = 0;
-  drawArea.innerHTML = "";
-  manualDraw.hidden = false;
-  drawNext.disabled = false;
-  drawNext.textContent = "抽出第一張牌";
-  manualHint.textContent = "請先想好 A 路線與 B 路線，再按下按鈕抽現況牌。";
-  ritualText.textContent = "二選一不是替你決定，而是把兩條路的代價與禮物攤開。";
+  const saveResult = document.querySelector("#saveResult");
+  if (saveResult) {
+    saveResult.addEventListener("click", copyAndSaveResult);
+  }
+
+  const restart = document.querySelector("#restart");
+  if (restart) {
+    restart.addEventListener("click", () => {
+      Object.assign(state, {
+        step: "question",
+        question: "",
+        drawn: [],
+        drawComplete: false,
+        isDrawing: false,
+        status: "",
+      });
+      render();
+    });
+  }
 }
 
-function selectedTopic() {
-  return document.querySelector("input[name='topic']:checked")?.value || "";
+function optionMarkup(name, value, label, hint, checked) {
+  return `
+    <label class="option">
+      <input type="radio" name="${name}" value="${value}" ${checked ? "checked" : ""} />
+      <span>
+        <strong>${escapeHtml(label)}</strong>
+        <small>${escapeHtml(hint)}</small>
+      </span>
+    </label>
+  `;
 }
 
-function choiceLabels() {
-  const a = document.querySelector("#routeA").value.trim() || "A 路線";
-  const b = document.querySelector("#routeB").value.trim() || "B 路線";
+function renderAltar() {
+  return `
+    <div class="altar">
+      <div class="deck ${state.isDrawing ? "is-shuffling" : ""}" aria-hidden="true">
+        <div></div><div></div><div></div>
+      </div>
+      <p class="ritual-text">${state.isDrawing ? "洗牌中，請讓問題保持清楚。" : "按下按鈕後，牌會依照此刻的牌陣展開。"}</p>
+    </div>
+  `;
+}
+
+function renderDrawnSlots(labels) {
+  return `
+    <div class="draw-grid">
+      ${state.drawn.map((drawn, index) => `
+        <article class="slot">
+          <div class="slot-label">${escapeHtml(labels[index])}</div>
+          ${cardMarkup(drawn, "is-revealed")}
+          <div class="card-name">
+            <strong>${escapeHtml(drawn.card.zh)}</strong>
+            <small>${drawn.reversed ? "逆位" : "正位"} · ${escapeHtml(drawn.card.en)}</small>
+          </div>
+        </article>
+      `).join("")}
+    </div>
+  `;
+}
+
+function resultCardMarkup(drawn, label, index) {
+  const orientation = drawn.reversed ? "逆位" : "正位";
+  const meaning = drawn.reversed ? drawn.card.reversed : drawn.card.upright;
+  return `
+    <article class="reading-card">
+      <div class="reading-card-top">
+        ${cardMarkup(drawn, "mini-card is-revealed")}
+        <div>
+          <p class="card-index">${String(index + 1).padStart(2, "0")} / ${escapeHtml(label)}</p>
+          <h3>${escapeHtml(drawn.card.zh)}（${orientation}）</h3>
+          <small>${escapeHtml(drawn.card.en)}</small>
+        </div>
+      </div>
+      <div class="meaning">
+        <strong>牌位</strong>
+        <p>${escapeHtml(positionNotes[state.spread][index])}</p>
+      </div>
+      <div class="meaning">
+        <strong>傳統牌義</strong>
+        <p>${escapeHtml(meaning)}</p>
+      </div>
+    </article>
+  `;
+}
+
+function cardMarkup(drawn, extraClass = "") {
+  return `
+    <div class="tarot-card ${extraClass} ${drawn.reversed ? "is-reversed" : ""}">
+      <div class="tarot-card-inner">
+        <div class="card-back"></div>
+        <div class="card-front">
+          ${spriteSvg(drawn.card.spriteIndex, drawn.card.zh)}
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function spriteSvg(spriteIndex, label) {
+  const { sx, sy, sw, sh } = spriteCell(spriteIndex);
+  return `
+    <svg class="card-art" viewBox="${sx} ${sy} ${sw} ${sh}" preserveAspectRatio="xMidYMid slice" role="img" aria-label="${escapeHtml(label)}">
+      <image href="${SPRITE_SRC}" x="0" y="0" width="${SPRITE_WIDTH}" height="${SPRITE_HEIGHT}"></image>
+    </svg>
+  `;
+}
+
+function spriteCell(spriteIndex) {
+  const [sx, sy, sw, sh] = CARD_BOXES[spriteIndex % CARD_BOXES.length];
+  return { sx, sy, sw, sh };
+}
+
+function activeLabels() {
+  if (state.spread !== "choice") return spreads[state.spread].labels;
+  const a = state.routeA || "A 路線";
+  const b = state.routeB || "B 路線";
   return ["共同現況", `${a}：過程`, `${a}：結果`, `${b}：過程`, `${b}：結果`];
+}
+
+function drawInstruction(nextLabel) {
+  if (state.spread === "choice") {
+    return state.drawComplete
+      ? "五張牌已抽齊，可以查看結果。"
+      : `下一張是「${nextLabel}」。請先在心裡確認這個位置，再按下抽牌。`;
+  }
+  return state.drawComplete
+    ? "三張牌已抽齊，可以查看結果。"
+    : "系統會直接抽出三張牌，並以牌陣位置展示。";
+}
+
+async function drawAutoSpread() {
+  state.isDrawing = true;
+  render();
+  await pause(1050);
+  state.drawn = drawMany(spreads[state.spread].labels.length);
+  state.isDrawing = false;
+  state.drawComplete = true;
+  render();
+}
+
+async function drawChoiceCard() {
+  const labels = activeLabels();
+  if (state.drawn.length >= labels.length) return;
+  state.isDrawing = true;
+  render();
+  await pause(520);
+  const taken = state.drawn.map((drawn) => drawn.card.id);
+  state.drawn.push(drawOne(taken));
+  state.drawComplete = state.drawn.length === labels.length;
+  state.isDrawing = false;
+  render();
 }
 
 function drawMany(count) {
@@ -218,268 +584,245 @@ function drawMany(count) {
 function drawOne(takenIds = []) {
   const pool = deck.filter((card) => !takenIds.includes(card.id));
   const card = pool[Math.floor(Math.random() * pool.length)];
+  return { card, reversed: Math.random() < 0.42 };
+}
+
+function resetDraw() {
+  state.drawn = [];
+  state.drawComplete = false;
+  state.isDrawing = false;
+  state.status = "";
+}
+
+function goTo(step) {
+  state.step = step;
+  render();
+}
+
+function stepLabel(step) {
   return {
-    card,
-    reversed: Math.random() < 0.42,
-  };
+    question: "問題",
+    focus: "默念",
+    spread: "牌陣",
+    details: "路線",
+    draw: "抽牌",
+    result: "結果",
+  }[step];
 }
 
-function renderSlots(labels, cards) {
-  drawArea.innerHTML = "";
-  labels.forEach((label, index) => appendSlot(label, cards[index], index));
-}
+async function copyAndSaveResult() {
+  const button = document.querySelector("#saveResult");
+  const status = document.querySelector("#saveStatus");
+  button.disabled = true;
+  status.textContent = "正在整理文字與圖檔。";
+  const text = buildResultText();
+  let copied = false;
 
-function appendSlot(label, drawn, index) {
-  const slot = document.createElement("article");
-  slot.className = "slot";
-  slot.dataset.slot = index;
-  slot.innerHTML = `
-    <div class="slot-label">${label}</div>
-    <div class="tarot-card ${drawn.reversed ? "is-reversed" : ""}">
-      <div class="tarot-card-inner">
-        <div class="back card-back"></div>
-        <div class="front">
-          <img alt="${drawn.card.zh}" src="${cardImage(drawn.card)}" />
-        </div>
-      </div>
-    </div>
-    <div class="card-name">
-      <strong>${drawn.card.zh}</strong>
-      <small>${drawn.reversed ? "逆位" : "正位"} · ${drawn.card.en}</small>
-    </div>
-  `;
-  drawArea.append(slot);
-}
-
-async function revealSequentially(done) {
-  const cards = [...drawArea.querySelectorAll(".tarot-card")];
-  for (let i = 0; i < cards.length; i += 1) {
-    ritualText.textContent = `第 ${i + 1} 張牌正在翻開。`;
-    await pause(520);
-    cards[i].classList.add("revealed");
+  try {
+    await navigator.clipboard.writeText(text);
+    copied = true;
+  } catch {
+    copied = fallbackCopy(text);
   }
-  await pause(360);
-  done();
-}
 
-function finishReading() {
-  const topic = selectedTopic();
-  const labels = currentSpread === "choice" ? choiceLabels() : spreads[currentSpread].labels;
-  results.hidden = false;
-  summary.textContent = buildSummary(topic, labels);
-  resultList.innerHTML = drawnCards.map((drawn, index) => {
-    const sections = interpretSections(drawn, labels[index], topic, currentSpread)
-      .map((section) => `
-        <div class="reading-section">
-          <strong>${escapeHtml(section.title)}</strong>
-          <p>${escapeHtml(section.text)}</p>
-        </div>
-      `).join("");
-    return `
-    <article class="reading-card">
-      <h3>${escapeHtml(labels[index])}｜${escapeHtml(drawn.card.zh)}（${drawn.reversed ? "逆位" : "正位"}）</h3>
-      ${sections}
-    </article>
-  `;
-  }).join("");
-  ritualText.textContent = "牌面已經揭示，請把它當成一面鏡子，而不是命令。";
-  results.scrollIntoView({ behavior: "smooth", block: "start" });
-}
-
-function buildSummary(topic, labels) {
-  const topicText = topicLabels[topic];
-  if (currentSpread === "choice") {
-    return `本次二選一聚焦在「${topicText}」。以下只列出每張牌所在位置與傳統牌意，實際解讀可由解讀者自行延伸。`;
+  try {
+    const blob = await renderResultImage();
+    const fileName = `隅星辰-${new Date().toISOString().slice(0, 10)}.png`;
+    const file = new File([blob], fileName, { type: "image/png" });
+    if (navigator.canShare?.({ files: [file] })) {
+      await navigator.share({ files: [file], title: "隅星辰抽牌結果", text: "隅星辰抽牌結果" });
+      status.textContent = copied ? "文字已複製，圖檔已交給系統分享/儲存。" : "圖檔已交給系統分享/儲存。";
+    } else {
+      downloadBlob(blob, fileName);
+      status.textContent = copied ? "文字已複製，圖檔已下載。" : "圖檔已下載。";
+    }
+  } catch {
+    status.textContent = copied ? "文字已複製；圖檔產生失敗，請再試一次。" : "無法複製或產生圖檔，請再試一次。";
+  } finally {
+    button.disabled = false;
   }
-  return `本次${spreads[currentSpread].name}聚焦在「${topicText}」。以下只列出${labels.join("、")}各位置的傳統牌意。`;
 }
 
-function interpretSections(drawn, position, topic, spread) {
-  const { card, reversed } = drawn;
-  const keyword = reversed ? card.reversed : card.upright;
-  return [
-    {
-      title: "位置",
-      text: positionMeaning(spread, position),
-    },
-    {
-      title: "傳統關鍵字",
-      text: keyword,
-    },
-    {
-      title: "基本牌意",
-      text: traditionalMeaning(drawn),
-    },
-    {
-      title: "面向",
-      text: `本次問題面向：${topicLabels[topic]}。此處不做延伸建議，保留給解讀者自行講解。`,
-    },
+function buildResultText() {
+  const labels = activeLabels();
+  const lines = [
+    "隅星辰抽牌結果",
+    `問題：${state.question || "我想看清楚這件事目前的狀態。"}`,
+    `面向：${topicLabels[state.topic]}`,
+    `牌陣：${spreads[state.spread].name}`,
+    "",
   ];
+
+  state.drawn.forEach((drawn, index) => {
+    const orientation = drawn.reversed ? "逆位" : "正位";
+    const meaning = drawn.reversed ? drawn.card.reversed : drawn.card.upright;
+    lines.push(`${index + 1}. ${labels[index]}｜${drawn.card.zh}（${orientation}）`);
+    lines.push(`牌位：${positionNotes[state.spread][index]}`);
+    lines.push(`傳統牌義：${meaning}`);
+    lines.push("");
+  });
+
+  lines.push("牌義參考：A. E. Waite《The Pictorial Key to the Tarot》(1911)");
+  lines.push(SOURCE_URL);
+  return lines.join("\n");
 }
 
-function positionMeaning(spread, position) {
-  if (spread === "flow") {
-    if (position.includes("過去")) return "過去的根：事件已形成的背景、舊有因素、先前選擇或累積狀態。";
-    if (position.includes("現在")) return "現在的流向：目前正在運作的能量、眼前狀況與當下最明顯的主題。";
-    return "未來的可能：依照目前狀態延伸出的趨勢、可能發展或後續氣氛。";
+async function renderResultImage() {
+  const labels = activeLabels();
+  const canvas = document.createElement("canvas");
+  const ctx = canvas.getContext("2d");
+  const width = 1080;
+  const cardW = 150;
+  const cardH = cardW / CARD_RATIO;
+  const margin = 70;
+  const line = 34;
+  ctx.font = "25px serif";
+  const blocks = state.drawn.map((drawn, index) => {
+    const meaning = drawn.reversed ? drawn.card.reversed : drawn.card.upright;
+    const textLines = wrapCanvasText(ctx, `${labels[index]}｜${drawn.card.zh}（${drawn.reversed ? "逆位" : "正位"}） ${meaning}`, width - margin * 2 - cardW - 34);
+    return { drawn, label: labels[index], textLines, height: Math.max(cardH, textLines.length * line + 56) };
+  });
+  const height = 330 + blocks.reduce((sum, block) => sum + block.height + 34, 0) + 120;
+
+  canvas.width = width;
+  canvas.height = height;
+  ctx.fillStyle = "#151311";
+  ctx.fillRect(0, 0, width, height);
+  ctx.fillStyle = "#d8ad5b";
+  ctx.font = "42px serif";
+  ctx.fillText("隅星辰", margin, 92);
+  ctx.font = "24px serif";
+  ctx.fillText(`${topicLabels[state.topic]} · ${spreads[state.spread].name}`, margin, 136);
+  ctx.fillStyle = "#f4ead4";
+  ctx.font = "32px serif";
+  drawWrapped(ctx, state.question || "我想看清楚這件事目前的狀態。", margin, 196, width - margin * 2, 44);
+
+  const sprite = await loadImage(SPRITE_SRC);
+  let y = 300;
+  blocks.forEach((block, index) => {
+    ctx.fillStyle = "rgba(255,255,255,0.045)";
+    roundRect(ctx, margin - 20, y - 20, width - margin * 2 + 40, block.height + 40, 10);
+    ctx.fill();
+    drawSpriteCard(ctx, sprite, block.drawn, margin, y, cardW, cardH);
+    ctx.fillStyle = "#d8ad5b";
+    ctx.font = "24px serif";
+    ctx.fillText(String(index + 1).padStart(2, "0"), margin + cardW + 34, y + 28);
+    ctx.fillStyle = "#f4ead4";
+    ctx.font = "30px serif";
+    ctx.fillText(`${block.label}｜${block.drawn.card.zh}（${block.drawn.reversed ? "逆位" : "正位"}）`, margin + cardW + 34, y + 68);
+    ctx.fillStyle = "#c9bda6";
+    ctx.font = "25px serif";
+    drawWrapped(ctx, block.drawn.reversed ? block.drawn.card.reversed : block.drawn.card.upright, margin + cardW + 34, y + 112, width - margin * 2 - cardW - 34, line);
+    y += block.height + 34;
+  });
+
+  ctx.fillStyle = "#c9bda6";
+  ctx.font = "22px serif";
+  ctx.fillText("牌義參考 A. E. Waite《The Pictorial Key to the Tarot》(1911)，中文為摘要整理。", margin, height - 54);
+
+  return new Promise((resolve, reject) => {
+    canvas.toBlob((blob) => blob ? resolve(blob) : reject(new Error("canvas export failed")), "image/png", 0.96);
+  });
+}
+
+function drawSpriteCard(ctx, sprite, drawn, x, y, w, h) {
+  const { sx, sy, sw, sh } = spriteCell(drawn.card.spriteIndex);
+  ctx.save();
+  roundRect(ctx, x, y, w, h, 8);
+  ctx.clip();
+  if (drawn.reversed) {
+    ctx.translate(x + w / 2, y + h / 2);
+    ctx.rotate(Math.PI);
+    ctx.drawImage(sprite, sx, sy, sw, sh, -w / 2, -h / 2, w, h);
+  } else {
+    ctx.drawImage(sprite, sx, sy, sw, sh, x, y, w, h);
   }
-  if (spread === "triangle") {
-    if (position.includes("狀況")) return "目前狀況：事件表面與核心正在呈現的樣子。";
-    if (position.includes("阻礙")) return "主要阻礙：卡住、拖延、衝突或需要留意的因素。";
-    return "可行建議：牌陣中作為行動方向、態度或處理方式的位置。";
-  }
-  if (position.includes("現況")) return "共同現況：A 與 B 兩條路線都共同面對的背景與起點。";
-  if (position.includes("過程")) return `${position}：選擇此路線時，中途可能呈現的狀態或氣氛。`;
-  return `${position}：此路線照目前能量延伸出的可能結果或收束狀態。`;
+  ctx.restore();
 }
 
-function traditionalMeaning(drawn) {
-  const { card, reversed } = drawn;
-  if (card.arcana === "major") {
-    return reversed
-      ? `${card.zh}逆位通常指向${card.reversed}。傳統上，它表示這張大牌的主題「${card.theme}」受阻、失衡、延遲，或以較不成熟的方式表現。`
-      : `${card.zh}正位通常指向${card.upright}。傳統上，它表示這張大牌的主題「${card.theme}」正在清楚呈現，屬於事件中的主要力量。`;
-  }
-  const suit = suitData[card.suit];
-  const rankText = pipTone[card.rank][1];
-  return reversed
-    ? `${card.zh}逆位通常指向${card.reversed}。${suit.zh}屬於${suit.element}元素，傳統上與${suit.upright}有關；逆位時，這股力量較容易失衡或不順。牌階含義：${rankText}。`
-    : `${card.zh}正位通常指向${card.upright}。${suit.zh}屬於${suit.element}元素，傳統上與${suit.upright}有關。牌階含義：${rankText}。`;
+function loadImage(src) {
+  return new Promise((resolve, reject) => {
+    const image = new Image();
+    image.onload = () => resolve(image);
+    image.onerror = reject;
+    image.src = src;
+  });
 }
 
-function cardImage(card) {
-  const data = card.arcana === "major" ? majorSvg(card) : minorSvg(card);
-  return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(data)}`;
+function drawWrapped(ctx, text, x, y, maxWidth, lineHeight) {
+  wrapCanvasText(ctx, text, maxWidth).forEach((lineText, index) => {
+    ctx.fillText(lineText, x, y + index * lineHeight);
+  });
 }
 
-function majorSvg(card) {
-  const hue = (card.number * 31) % 360;
-  const accent = `hsl(${hue} 48% 38%)`;
-  const roman = ["0", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII", "XIII", "XIV", "XV", "XVI", "XVII", "XVIII", "XIX", "XX", "XXI"][card.number];
-  const motif = majorMotif(card.motif, accent);
-  return `
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 250 400">
-    <rect width="250" height="400" fill="#f2e1b6"/>
-    <rect x="12" y="12" width="226" height="376" fill="#fff4cf" stroke="#332414" stroke-width="4"/>
-    <rect x="23" y="45" width="204" height="285" fill="#e9c979" stroke="#7e4c2f" stroke-width="2"/>
-    <circle cx="125" cy="106" r="48" fill="${accent}" opacity=".85"/>
-    <path d="M30 287 C65 235, 90 315, 125 264 S189 236, 220 286 L220 330 L30 330 Z" fill="#6f7544" opacity=".8"/>
-    ${motif}
-    <text x="125" y="36" text-anchor="middle" font-family="Georgia, serif" font-size="20" fill="#332414">${roman}</text>
-    <text x="125" y="366" text-anchor="middle" font-family="serif" font-size="20" font-weight="700" fill="#332414">${escapeXml(card.zh)}</text>
-    <text x="125" y="385" text-anchor="middle" font-family="Georgia, serif" font-size="12" fill="#6b4c2c">${escapeXml(card.en)}</text>
-  </svg>`;
+function wrapCanvasText(ctx, text, maxWidth) {
+  const chars = [...text];
+  const lines = [];
+  let line = "";
+  chars.forEach((char) => {
+    const test = line + char;
+    if (ctx.measureText(test).width > maxWidth && line) {
+      lines.push(line);
+      line = char;
+    } else {
+      line = test;
+    }
+  });
+  if (line) lines.push(line);
+  return lines;
 }
 
-function majorMotif(type, color) {
-  const common = `stroke="#2d2116" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"`;
-  const motifs = {
-    cliff: `<path d="M74 292 L124 176 L176 292" fill="#efe3ba" ${common}/><circle cx="125" cy="154" r="18" fill="#f7d36d" ${common}/><path d="M102 195 L74 226 M148 195 L180 223" ${common}/>` ,
-    wand: `<path d="M125 260 L125 140" ${common}/><circle cx="125" cy="124" r="22" fill="#f7d36d" ${common}/><path d="M86 205 L164 205 M98 172 L152 238" ${common}/>` ,
-    moon: `<path d="M144 118 A45 45 0 1 0 144 206 A30 45 0 1 1 144 118" fill="#f7e8b3" ${common}/><path d="M83 265 Q125 228 167 265" fill="none" ${common}/>` ,
-    garden: `<circle cx="125" cy="160" r="30" fill="#e56a58" ${common}/><path d="M125 190 V275 M88 232 C115 220 112 252 125 251 M162 232 C135 220 138 252 125 251" ${common}/>` ,
-    throne: `<rect x="78" y="144" width="94" height="122" fill="${color}" ${common}/><path d="M72 142 H178 L166 103 H84 Z M86 266 L70 316 M164 266 L180 316" fill="none" ${common}/>` ,
-    keys: `<path d="M125 104 V284 M94 174 H156" ${common}/><circle cx="103" cy="280" r="20" fill="none" ${common}/><circle cx="147" cy="280" r="20" fill="none" ${common}/>` ,
-    lovers: `<circle cx="96" cy="148" r="18" fill="#f2d0ae" ${common}/><circle cx="154" cy="148" r="18" fill="#f2d0ae" ${common}/><path d="M84 178 Q125 232 166 178 M125 105 C108 78 67 97 83 132 C96 158 125 166 125 166 C125 166 154 158 167 132 C183 97 142 78 125 105" fill="#d64c4c" ${common}/>` ,
-    chariot: `<rect x="72" y="168" width="106" height="76" fill="${color}" ${common}/><circle cx="96" cy="258" r="17" fill="#332414"/><circle cx="154" cy="258" r="17" fill="#332414"/><path d="M94 160 L88 112 M156 160 L162 112" ${common}/>` ,
-    lion: `<circle cx="125" cy="180" r="48" fill="#c67c2c" ${common}/><circle cx="107" cy="174" r="5"/><circle cx="143" cy="174" r="5"/><path d="M105 209 Q125 226 145 209 M80 132 Q125 92 170 132" fill="none" ${common}/>` ,
-    lantern: `<path d="M125 120 V292 M95 148 H155 L145 210 H105 Z" fill="#f7d36d" ${common}/><path d="M90 292 H160" ${common}/>` ,
-    wheel: `<circle cx="125" cy="190" r="66" fill="none" ${common}/><circle cx="125" cy="190" r="22" fill="${color}" ${common}/><path d="M125 124 V256 M59 190 H191 M80 145 L170 235 M170 145 L80 235" ${common}/>` ,
-    scales: `<path d="M125 118 V276 M82 148 H168 M82 148 L62 216 H102 Z M168 148 L148 216 H188 Z" fill="none" ${common}/>` ,
-    hanged: `<path d="M70 110 H180 M125 110 V260 M103 142 Q125 170 147 142 M125 260 L105 306 M125 260 L145 306" ${common}/>` ,
-    horse: `<path d="M70 245 C90 150 168 145 183 238 C164 217 137 217 120 250 C107 223 87 223 70 245 Z" fill="#eee6d1" ${common}/><path d="M96 126 L154 306" ${common}/>` ,
-    cups: `<path d="M82 130 C82 190 113 196 125 214 C137 196 168 190 168 130 Z" fill="#7aa0a8" ${common}/><path d="M83 265 C111 236 139 294 167 265" fill="none" ${common}/>` ,
-    chains: `<path d="M82 154 C50 210 93 270 125 230 C157 270 200 210 168 154" fill="${color}" ${common}/><path d="M88 258 Q125 292 162 258 M82 132 L168 280" ${common}/>` ,
-    tower: `<path d="M92 295 L105 113 L154 113 L168 295 Z" fill="#b9ada0" ${common}/><path d="M92 94 L125 46 L158 94 M82 135 L60 105 M168 155 L197 121" fill="none" ${common}/>` ,
-    star: `<path d="M125 92 L139 143 L192 143 L149 173 L165 224 L125 192 L85 224 L101 173 L58 143 L111 143 Z" fill="#f7d36d" ${common}/><path d="M86 276 Q125 245 164 276" fill="none" ${common}/>` ,
-    moonpath: `<path d="M145 94 A50 50 0 1 0 145 194 A30 50 0 1 1 145 94" fill="#f5e6ab" ${common}/><path d="M80 302 C103 230 147 230 170 302" fill="none" ${common}/>` ,
-    sun: `<circle cx="125" cy="150" r="52" fill="#f2bc35" ${common}/><path d="M125 70 V45 M125 255 V230 M45 150 H70 M180 150 H205 M70 95 L52 78 M180 95 L198 78 M70 205 L52 222 M180 205 L198 222" ${common}/>` ,
-    trumpet: `<path d="M91 127 L165 96 L147 174 Z" fill="#f7d36d" ${common}/><path d="M102 178 C105 240 145 240 148 178 M86 282 H164" fill="none" ${common}/>` ,
-    wreath: `<ellipse cx="125" cy="190" rx="62" ry="95" fill="none" ${common}/><path d="M86 112 Q125 88 164 112 M86 268 Q125 292 164 268" fill="none" ${common}/><circle cx="125" cy="190" r="25" fill="${color}" ${common}/>` ,
-  };
-  return motifs[type] || motifs.star;
+function roundRect(ctx, x, y, width, height, radius) {
+  ctx.beginPath();
+  ctx.moveTo(x + radius, y);
+  ctx.arcTo(x + width, y, x + width, y + height, radius);
+  ctx.arcTo(x + width, y + height, x, y + height, radius);
+  ctx.arcTo(x, y + height, x, y, radius);
+  ctx.arcTo(x, y, x + width, y, radius);
+  ctx.closePath();
 }
 
-function minorSvg(card) {
-  const suit = suitData[card.suit];
-  const positions = symbolPositions(card.rank);
-  const symbols = positions.map(([x, y, size]) => drawSuit(suit.symbol, x, y, size, suit.color)).join("");
-  const court = card.rank > 10 ? courtFigure(card.rank, suit.color) : "";
-  return `
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 250 400">
-    <rect width="250" height="400" fill="#f2e1b6"/>
-    <rect x="12" y="12" width="226" height="376" fill="#fff4cf" stroke="#332414" stroke-width="4"/>
-    <rect x="25" y="52" width="200" height="276" fill="#edd28d" stroke="#8c5b34" stroke-width="2"/>
-    <text x="34" y="38" font-family="Georgia, serif" font-size="22" fill="#332414">${card.rank <= 10 ? card.rank : card.en[0]}</text>
-    <text x="216" y="382" text-anchor="end" font-family="Georgia, serif" font-size="22" fill="#332414">${suit.symbol}</text>
-    ${symbols}
-    ${court}
-    <text x="125" y="360" text-anchor="middle" font-family="serif" font-size="18" font-weight="700" fill="#332414">${escapeXml(card.zh)}</text>
-    <text x="125" y="380" text-anchor="middle" font-family="Georgia, serif" font-size="11" fill="#6b4c2c">${escapeXml(card.en)}</text>
-  </svg>`;
+function downloadBlob(blob, fileName) {
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = fileName;
+  document.body.append(link);
+  link.click();
+  link.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 
-function symbolPositions(rank) {
-  if (rank > 10) return [[125, 160, 44], [85, 252, 25], [165, 252, 25]];
-  const slots = [
-    [125, 185, 46], [82, 118, 32], [168, 118, 32], [82, 252, 32], [168, 252, 32],
-    [125, 102, 27], [125, 270, 27], [82, 185, 30], [168, 185, 30], [125, 222, 27],
-  ];
-  const orders = {
-    1: [0], 2: [1, 4], 3: [1, 0, 4], 4: [1, 2, 3, 4], 5: [1, 2, 0, 3, 4],
-    6: [1, 2, 7, 8, 3, 4], 7: [5, 1, 2, 7, 8, 3, 4], 8: [5, 1, 2, 7, 8, 3, 4, 6],
-    9: [5, 1, 2, 7, 0, 8, 3, 4, 6], 10: [5, 1, 2, 7, 0, 8, 9, 3, 4, 6],
-  };
-  return orders[rank].map((index) => slots[index]);
-}
-
-function drawSuit(symbol, x, y, size, color) {
-  return `<text x="${x}" y="${y}" text-anchor="middle" dominant-baseline="middle" font-size="${size}" fill="${color}" font-family="Georgia, serif">${symbol}</text>`;
-}
-
-function courtFigure(rank, color) {
-  const crowns = {
-    11: "M96 122 L112 92 L126 122 L140 92 L156 122 Z",
-    12: "M95 126 L125 84 L155 126 Z",
-    13: "M92 122 L108 92 L125 116 L142 92 L158 122 Z",
-    14: "M88 122 L104 88 L125 116 L146 88 L162 122 Z",
-  };
-  return `
-    <path d="${crowns[rank]}" fill="#d5a84f" stroke="#332414" stroke-width="4" stroke-linejoin="round"/>
-    <circle cx="125" cy="160" r="32" fill="#f0c9a0" stroke="#332414" stroke-width="4"/>
-    <path d="M82 292 C86 224 164 224 168 292 Z" fill="${color}" stroke="#332414" stroke-width="4"/>
-    <path d="M96 181 Q125 210 154 181" fill="none" stroke="#332414" stroke-width="4" stroke-linecap="round"/>
-  `;
-}
-
-function clearReading() {
-  drawnCards = [];
-  choiceIndex = 0;
-  drawArea.innerHTML = "";
-  results.hidden = true;
-  resultList.innerHTML = "";
-  summary.textContent = "";
-  manualDraw.hidden = true;
-  drawNext.disabled = false;
-  startButton.disabled = false;
-  deckEl.classList.remove("shuffling");
-  ritualText.textContent = spreads[currentSpread].prompt;
-}
-
-function escapeXml(value) {
-  return String(value)
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;");
-}
-
-function escapeHtml(value) {
-  return escapeXml(value).replaceAll("'", "&#39;");
+function fallbackCopy(text) {
+  const textarea = document.createElement("textarea");
+  textarea.value = text;
+  textarea.setAttribute("readonly", "");
+  textarea.style.position = "fixed";
+  textarea.style.opacity = "0";
+  document.body.append(textarea);
+  textarea.select();
+  const copied = document.execCommand("copy");
+  textarea.remove();
+  return copied;
 }
 
 function pause(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-clearReading();
+function escapeHtml(value) {
+  return String(value)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("sw.js").catch(() => {});
+  });
+}
+
+render();
