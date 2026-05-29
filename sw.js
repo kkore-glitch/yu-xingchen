@@ -1,9 +1,9 @@
-const CACHE_NAME = "yu-xingchen-20260520-5";
+const CACHE_NAME = "yu-xingchen-20260529-1";
 const APP_SHELL = [
   "./",
   "index.html",
-  "styles.css?v=20260520e",
-  "app.js?v=20260520e",
+  "styles.css?v=20260529a",
+  "app.js?v=20260529a",
   "manifest.webmanifest",
   "assets/icon.svg",
 ];

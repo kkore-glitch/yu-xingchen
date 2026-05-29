@@ -90,12 +90,12 @@ const majorCards = [
   ["皇后", "The Empress", "豐饒、行動、主動性、孕育、成形與感官世界。", "遲疑、真相浮現、事情揭開，原本的秩序可能鬆動。"],
   ["皇帝", "The Emperor", "秩序、權力、保護、實現、規則與掌控。", "不成熟、阻礙、控制失衡，或權威變得僵硬。"],
   ["教皇", "The Hierophant", "婚姻、同盟、慈悲、傳統、制度與精神指引。", "過度順從、脆弱、反常規，或信念與制度的拉扯。"],
-  ["戀人", "The Lovers", "吸引、愛、美、考驗、選擇與關係中的試煉。", "失敗、分離、選擇失準，或情感考驗未能通過。"],
+  ["戀人", "The Lovers", "吸引、愛、美、考驗、選擇與關係中的試煉。", "失敗、分離、選擇偏差，或情感考驗未能通過。"],
   ["戰車", "The Chariot", "勝利、克服、援助、掌控與意志推進。", "失控、爭端、敗退、方向錯置或掌控力下降。"],
   ["力量", "Strength", "力量、勇氣、耐心、柔性控制與內在韌性。", "軟弱、濫用力量、失去耐性或意志搖擺。"],
   ["隱者", "The Hermit", "審慎、尋求、內省、指引與深思後的判斷。", "孤立、恐懼、過度保守、隱瞞或拒絕建議。"],
   ["命運之輪", "Wheel of Fortune", "命運、變化、轉折、幸運與循環。", "延遲、壞運、循環受阻或變化不如預期。"],
-  ["正義", "Justice", "公平、正義、因果、法律、平衡與清楚判斷。", "不公、偏見、複雜化、失衡或判斷失準。"],
+  ["正義", "Justice", "公平、正義、因果、法律、平衡與清楚判斷。", "不公、偏見、複雜化、失衡或判斷偏差。"],
   ["吊人", "The Hanged Man", "智慧、試煉、犧牲、暫停與換位觀看。", "無意義的犧牲、自我中心、停滯或抗拒轉念。"],
   ["死神", "Death", "結束、轉變、死亡象徵、舊狀態的終止。", "遲滯、惰性、睡眠、改變延後或無法斷尾。"],
   ["節制", "Temperance", "節制、調和、管理、混合與中庸。", "衝突、分裂、失調、過量或關係不合。"],
@@ -104,7 +104,7 @@ const majorCards = [
   ["星星", "The Star", "希望、明亮前景、洞察、靈感與精神上的慰藉。", "失望、驕傲、信心不足，或希望未能落地。"],
   ["月亮", "The Moon", "隱憂、迷霧、欺瞞、恐懼、夢境與潛意識。", "情勢搖晃、較小的欺瞞、危機漸退但仍未明朗。"],
   ["太陽", "The Sun", "快樂、成功、滿足、活力與清楚可見的成果。", "延遲的成功、較弱的幸福，或喜悅未完全展開。"],
-  ["審判", "Judgement", "更新、召喚、判斷、甦醒與位置改變。", "遲疑、軟弱、簡單判斷失準，或不願回應召喚。"],
+  ["審判", "Judgement", "更新、召喚、判斷、甦醒與位置改變。", "遲疑、軟弱、簡單判斷偏差，或不願回應召喚。"],
   ["世界", "The World", "完成、成功、旅程、整合與一個循環的圓滿。", "停滯、固定、慣性、完成受阻或不願跨出下一步。"],
 ];
 
@@ -119,7 +119,7 @@ const minorCards = [
   ["wands", "權杖", "Wands", "Eight", "八", "快速行動、訊息、急速發展與事情逼近。", "嫉妒、爭吵、內部衝突或進展受干擾。"],
   ["wands", "權杖", "Wands", "Nine", "九", "防備、堅持、延遲、在壓力後仍守住力量。", "阻礙、逆境、災厄或防線疲弱。"],
   ["wands", "權杖", "Wands", "Ten", "十", "壓迫、負擔、責任過重，但也代表承擔成果。", "困難、陰謀、反覆與負擔失控。"],
-  ["wands", "權杖", "Wands", "Page", "侍者", "信使、忠誠的人、消息、活力與觀察中的年輕能量。", "壞消息、猶豫、流言、訊息失準。"],
+  ["wands", "權杖", "Wands", "Page", "侍者", "信使、忠誠的人、消息、活力與觀察中的年輕能量。", "壞消息、猶豫、流言、訊息偏差。"],
   ["wands", "權杖", "Wands", "Knight", "騎士", "離開、遷移、變動、熱烈行動與快速轉向。", "破裂、分離、干擾、行動被打斷。"],
   ["wands", "權杖", "Wands", "Queen", "皇后", "親切、貞潔、友善、熱情與可靠的支持。", "嫉妒、反覆、狹隘或善意被扭曲。"],
   ["wands", "權杖", "Wands", "King", "國王", "誠實、成熟、熱情、領導與實際的善意。", "嚴厲、固執、過度控制，或權威不易親近。"],
@@ -135,7 +135,7 @@ const minorCards = [
   ["cups", "聖杯", "Cups", "Ten", "十", "家庭幸福、內心安定、和諧與長久的滿足。", "家庭或情感失和、憤怒、暴力情緒或心意不真。"],
   ["cups", "聖杯", "Cups", "Page", "侍者", "年輕溫和的人、學習、消息、沉思與情感萌芽。", "誘惑、欺瞞、情感不成熟，或訊息不可靠。"],
   ["cups", "聖杯", "Cups", "Knight", "騎士", "到來、邀請、靠近、提議與友善的接觸。", "欺詐、策略、虛飾、表面禮貌下的不真。"],
-  ["cups", "聖杯", "Cups", "Queen", "皇后", "善良、愛、想像力、直覺與能給予情感支持的人。", "不可靠、變動、過度想像，或情感判斷失準。"],
+  ["cups", "聖杯", "Cups", "Queen", "皇后", "善良、愛、想像力、直覺與能給予情感支持的人。", "不可靠、變動、過度想像，或情感判斷偏差。"],
   ["cups", "聖杯", "Cups", "King", "國王", "公平、藝術、學問、法律、責任感與成熟情感。", "雙面、欺瞞、不義、醜聞或情感上的不誠實。"],
   ["swords", "寶劍", "Swords", "Ace", "一", "勝利、征服、力量、清楚判斷與切開局面的能力。", "災難、暴力、暴政、力量反噬或判斷過硬。"],
   ["swords", "寶劍", "Swords", "Two", "二", "平衡、停戰、克制、保留與暫時的和諧。", "欺瞞、虛假、雙重性，表面的平衡不可靠。"],
@@ -268,7 +268,7 @@ function renderFocus() {
           <strong>${escapeHtml(state.question || "我想看清楚這件事目前的狀態。")}</strong>
         </div>
         <div class="breath-ring" aria-hidden="true"></div>
-        <p class="muted">準備好後，再選擇適合這個問題的牌陣。</p>
+        <p class="muted">可以時，再選擇適合這個問題的牌陣。</p>
         <div class="actions">
           <button class="button secondary" type="button" data-back="question">上一步</button>
           <button class="button" type="button" data-next="spread">選擇牌陣</button>
@@ -338,7 +338,7 @@ function renderDraw() {
     <section class="screen">
       <div class="copy">
         <p class="eyebrow">Step ${state.spread === "choice" ? "05" : "04"}</p>
-        <h2>${state.drawn.length ? "牌面正在展開" : "準備抽牌"}</h2>
+        <h2>${state.drawn.length ? "牌面正在展開" : "抽牌前"}</h2>
         <p>${drawInstruction(nextLabel)}</p>
       </div>
       <div class="panel">
@@ -633,8 +633,17 @@ async function copyAndSaveResult() {
     const fileName = `隅星辰-${new Date().toISOString().slice(0, 10)}.png`;
     const file = new File([blob], fileName, { type: "image/png" });
     if (navigator.canShare?.({ files: [file] })) {
-      await navigator.share({ files: [file], title: "隅星辰抽牌結果", text: "隅星辰抽牌結果" });
-      status.textContent = copied ? "文字已複製，圖檔已交給系統分享/儲存。" : "圖檔已交給系統分享/儲存。";
+      try {
+        await navigator.share({ files: [file], title: "隅星辰抽牌結果", text: "隅星辰抽牌結果" });
+        status.textContent = copied ? "文字已複製，圖檔已交給系統分享/儲存。" : "圖檔已交給系統分享/儲存。";
+      } catch (error) {
+        if (error?.name === "AbortError") {
+          status.textContent = copied ? "已取消分享；文字已複製。" : "已取消分享。";
+        } else {
+          downloadBlob(blob, fileName);
+          status.textContent = copied ? "文字已複製，圖檔已下載。" : "圖檔已下載。";
+        }
+      }
     } else {
       downloadBlob(blob, fileName);
       status.textContent = copied ? "文字已複製，圖檔已下載。" : "圖檔已下載。";
@@ -702,32 +711,40 @@ async function renderResultImage() {
   ctx.font = "32px serif";
   drawWrapped(ctx, state.question || "我想看清楚這件事目前的狀態。", margin, 196, width - margin * 2, 44);
 
-  const cardImages = await Promise.all(blocks.map((block) => loadImage(block.drawn.card.image)));
-  let y = 300;
-  blocks.forEach((block, index) => {
-    ctx.fillStyle = "rgba(255,255,255,0.045)";
-    roundRect(ctx, margin - 20, y - 20, width - margin * 2 + 40, block.height + 40, 10);
-    ctx.fill();
-    drawCardImage(ctx, cardImages[index], block.drawn, margin, y, cardW, cardH);
-    ctx.fillStyle = "#d8ad5b";
-    ctx.font = "24px serif";
-    ctx.fillText(String(index + 1).padStart(2, "0"), margin + cardW + 34, y + 28);
-    ctx.fillStyle = "#f4ead4";
-    ctx.font = "30px serif";
-    ctx.fillText(`${block.label}｜${block.drawn.card.zh}（${block.drawn.reversed ? "逆位" : "正位"}）`, margin + cardW + 34, y + 68);
+  const cardImages = await Promise.all(blocks.map((block) => loadCanvasImage(block.drawn.card.image)));
+  try {
+    let y = 300;
+    blocks.forEach((block, index) => {
+      ctx.fillStyle = "rgba(255,255,255,0.045)";
+      roundRect(ctx, margin - 20, y - 20, width - margin * 2 + 40, block.height + 40, 10);
+      ctx.fill();
+      if (cardImages[index].image) {
+        drawCardImage(ctx, cardImages[index].image, block.drawn, margin, y, cardW, cardH);
+      } else {
+        drawCardFallback(ctx, block.drawn, margin, y, cardW, cardH);
+      }
+      ctx.fillStyle = "#d8ad5b";
+      ctx.font = "24px serif";
+      ctx.fillText(String(index + 1).padStart(2, "0"), margin + cardW + 34, y + 28);
+      ctx.fillStyle = "#f4ead4";
+      ctx.font = "30px serif";
+      ctx.fillText(`${block.label}｜${block.drawn.card.zh}（${block.drawn.reversed ? "逆位" : "正位"}）`, margin + cardW + 34, y + 68);
+      ctx.fillStyle = "#c9bda6";
+      ctx.font = "25px serif";
+      drawWrapped(ctx, block.drawn.reversed ? block.drawn.card.reversed : block.drawn.card.upright, margin + cardW + 34, y + 112, width - margin * 2 - cardW - 34, line);
+      y += block.height + 34;
+    });
+
     ctx.fillStyle = "#c9bda6";
-    ctx.font = "25px serif";
-    drawWrapped(ctx, block.drawn.reversed ? block.drawn.card.reversed : block.drawn.card.upright, margin + cardW + 34, y + 112, width - margin * 2 - cardW - 34, line);
-    y += block.height + 34;
-  });
+    ctx.font = "22px serif";
+    ctx.fillText("牌義參考 A. E. Waite《The Pictorial Key to the Tarot》(1911)；牌面圖像取自 Wikimedia Commons。", margin, height - 54);
 
-  ctx.fillStyle = "#c9bda6";
-  ctx.font = "22px serif";
-  ctx.fillText("牌義參考 A. E. Waite《The Pictorial Key to the Tarot》(1911)；牌面圖像取自 Wikimedia Commons。", margin, height - 54);
-
-  return new Promise((resolve, reject) => {
-    canvas.toBlob((blob) => blob ? resolve(blob) : reject(new Error("canvas export failed")), "image/png", 0.96);
-  });
+    return await exportCanvas(canvas);
+  } finally {
+    cardImages.forEach((entry) => {
+      if (entry.objectUrl) URL.revokeObjectURL(entry.objectUrl);
+    });
+  }
 }
 
 function drawCardImage(ctx, image, drawn, x, y, w, h) {
@@ -744,17 +761,71 @@ function drawCardImage(ctx, image, drawn, x, y, w, h) {
   ctx.restore();
 }
 
-function loadImage(src) {
+function drawCardFallback(ctx, drawn, x, y, w, h) {
+  ctx.save();
+  roundRect(ctx, x, y, w, h, 8);
+  ctx.fillStyle = "#f4ead4";
+  ctx.fill();
+  ctx.strokeStyle = "#d8ad5b";
+  ctx.lineWidth = 6;
+  ctx.stroke();
+  ctx.fillStyle = "#151311";
+  ctx.textAlign = "center";
+  ctx.font = "24px serif";
+  drawWrappedCentered(ctx, drawn.card.zh, x + w / 2, y + h / 2 - 18, w - 28, 32);
+  ctx.font = "18px serif";
+  ctx.fillText(drawn.reversed ? "逆位" : "正位", x + w / 2, y + h / 2 + 52);
+  ctx.restore();
+}
+
+async function loadCanvasImage(src) {
+  try {
+    const response = await fetch(src, { mode: "cors", credentials: "omit" });
+    if (!response.ok) throw new Error("image fetch failed");
+    const blob = await response.blob();
+    const objectUrl = URL.createObjectURL(blob);
+    try {
+      return { image: await loadImageElement(objectUrl), objectUrl };
+    } catch (error) {
+      URL.revokeObjectURL(objectUrl);
+      throw error;
+    }
+  } catch {
+    try {
+      return { image: await loadImageElement(src, true), objectUrl: "" };
+    } catch {
+      return { image: null, objectUrl: "" };
+    }
+  }
+}
+
+function loadImageElement(src, crossOrigin = false) {
   return new Promise((resolve, reject) => {
     const image = new Image();
-    image.crossOrigin = "anonymous";
+    if (crossOrigin) image.crossOrigin = "anonymous";
     image.onload = () => resolve(image);
     image.onerror = reject;
     image.src = src;
   });
 }
 
+function exportCanvas(canvas) {
+  return new Promise((resolve, reject) => {
+    try {
+      canvas.toBlob((blob) => blob ? resolve(blob) : reject(new Error("canvas export failed")), "image/png", 0.96);
+    } catch (error) {
+      reject(error);
+    }
+  });
+}
+
 function drawWrapped(ctx, text, x, y, maxWidth, lineHeight) {
+  wrapCanvasText(ctx, text, maxWidth).forEach((lineText, index) => {
+    ctx.fillText(lineText, x, y + index * lineHeight);
+  });
+}
+
+function drawWrappedCentered(ctx, text, x, y, maxWidth, lineHeight) {
   wrapCanvasText(ctx, text, maxWidth).forEach((lineText, index) => {
     ctx.fillText(lineText, x, y + index * lineHeight);
   });
