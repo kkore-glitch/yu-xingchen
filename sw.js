@@ -1,11 +1,13 @@
-const CACHE_NAME = "yu-xingchen-20260529-1";
+const CACHE_NAME = "yu-xingchen-20260529-2";
 const APP_SHELL = [
   "./",
   "index.html",
-  "styles.css?v=20260529a",
-  "app.js?v=20260529a",
+  "styles.css?v=20260529b",
+  "app.js?v=20260529b",
   "manifest.webmanifest",
-  "assets/icon.svg",
+  "assets/icon-192.png",
+  "assets/icon-512.png",
+  "assets/apple-touch-icon.png",
 ];
 
 self.addEventListener("install", (event) => {
